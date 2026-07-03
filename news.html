@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NDIS News Hub | Plan Decoder</title>
+<meta name="description" content="Live NDIS news, policy updates, funding changes and sector news — updated automatically from official Australian disability sources.">
+<style>
+:root{
+  --navy:#1a2744;--blue:#2563eb;--orange:#f97316;--green:#16a34a;
+  --border:#e2e8f0;--bg:#f8fafc;--card:#fff;
+  --text:#1e293b;--text-muted:#64748b;--radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.nav{background:var(--navy);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.nav-logo{color:#fff;font-weight:800;font-size:1.1rem;letter-spacing:-.5px}
+.nav-logo span{color:var(--orange)}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:rgba(255,255,255,.75);font-size:.88rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:var(--orange);color:#fff!important;font-weight:700;padding:8px 18px;border-radius:8px}
+
+.page-header{background:linear-gradient(135deg,var(--navy),#1e3a8a);color:#fff;padding:40px 24px;text-align:center}
+.page-header h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.page-header p{opacity:.8;font-size:.92rem;max-width:480px;margin:0 auto}
+.header-meta{margin-top:14px;display:flex;gap:16px;justify-content:center;font-size:.78rem;opacity:.65;flex-wrap:wrap}
+
+.layout{display:grid;grid-template-columns:1fr 300px;gap:24px;max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-btn{padding:7px 16px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:.82rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--blue);color:var(--blue)}
+.filter-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* REFRESH ROW */
+.refresh-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.refresh-status{font-size:.78rem;color:var(--text-muted)}
+.btn-refresh{background:var(--navy);color:#fff;font-size:.8rem;font-weight:600;padding:7px 16px;border-radius:8px;border:none;cursor:pointer}
+
+/* ARTICLE CARDS */
+.articles{display:grid;gap:16px}
+.article-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:box-shadow .2s}
+.article-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.article-meta{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.article-source{font-size:.72rem;font-weight:700;color:var(--text-muted);background:#f1f5f9;padding:2px 8px;border-radius:12px}
+.article-cat{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:12px}
+.cat-policy{background:#dbeafe;color:#1d4ed8}
+.cat-funding{background:#dcfce7;color:#15803d}
+.cat-provider{background:#f3e8ff;color:#7e22ce}
+.cat-rights{background:#fee2e2;color:#b91c1c}
+.cat-general{background:#f1f5f9;color:#475569}
+.article-date{font-size:.72rem;color:var(--text-muted);margin-left:auto}
+.article-card h3{font-size:.98rem;font-weight:700;color:var(--navy);margin-bottom:6px;line-height:1.35}
+.article-card h3 a{color:var(--navy)}
+.article-card h3 a:hover{color:var(--blue);text-decoration:none}
+.article-desc{font-size:.83rem;color:var(--text-muted);line-height:1.55;margin-bottom:10px}
+.article-link{font-size:.8rem;font-weight:600;color:var(--blue)}
+
+/* SKELETON */
+.skeleton{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.skel-line{background:#f1f5f9;border-radius:4px;margin-bottom:8px;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+.skel-sm{height:12px;width:40%}
+.skel-title{height:16px;width:90%;margin-bottom:10px}
+.skel-body{height:12px;width:100%}
+.skel-body2{height:12px;width:75%}
+
+/* SIDEBAR */
+.sidebar{}
+.sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.sidebar-card h3{font-size:.9rem;font-weight:800;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.key-date{padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:.82rem}
+.key-date:last-child{border-bottom:none}
+.key-date .date-label{font-weight:700;color:var(--orange);font-size:.75rem;display:block;margin-bottom:2px}
+.key-date .date-desc{color:var(--text);line-height:1.4}
+.resource-link{display:block;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:.83rem;color:var(--blue)}
+.resource-link:last-child{border-bottom:none}
+.resource-link:hover{text-decoration:underline}
+.promo-card{background:linear-gradient(135deg,var(--navy),#1e3a8a);color:#fff;padding:20px;border-radius:var(--radius);text-align:center}
+.promo-card h3{font-size:.95rem;font-weight:800;margin-bottom:8px}
+.promo-card p{font-size:.8rem;opacity:.8;margin-bottom:14px;line-height:1.4}
+.promo-card a{display:inline-block;background:var(--orange);color:#fff;font-weight:700;padding:10px 20px;border-radius:8px;font-size:.85rem}
+
+/* STATUS */
+.status-banner{background:#fef9c3;border:1px solid #fde047;border-radius:10px;padding:12px 16px;font-size:.82rem;color:#713f12;margin-bottom:16px;display:none}
+.no-results{padding:32px;text-align:center;color:var(--text-muted);font-size:.9rem}
+
+footer{background:var(--navy);color:rgba(255,255,255,.55);padding:28px 24px;text-align:center;font-size:.8rem}
+footer a{color:rgba(255,255,255,.7);margin:0 8px}
+footer a:hover{color:#fff}
+.footer-links{margin-bottom:10px}
+.footer-disclaimer{max-width:600px;margin:10px auto 0;font-size:.7rem;opacity:.6;line-height:1.5}
+
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{order:-1}
+  .nav-links a:not(.nav-cta){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Site navigation">
+  <div class="nav-logo">Plan<span>Decoder</span></div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="tool.html">Assessment Tool</a>
+    <a href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" class="nav-cta" target="_blank" rel="noopener">Get Full Access</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>📰 NDIS News Hub</h1>
+  <p>Live updates from official NDIS sources, sector news, policy changes and funding announcements.</p>
+  <div class="header-meta">
+    <span id="lastUpdated">Loading feeds…</span>
+    <span>Auto-refreshes every 15 minutes</span>
+    <span>Free · No sign-up required</span>
+  </div>
+</div>
+
+<div class="layout">
+  <main>
+    <div class="filter-bar" role="group" aria-label="Filter articles by category">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All News</button>
+      <button class="filter-btn" onclick="setFilter('policy',this)">Policy & Law</button>
+      <button class="filter-btn" onclick="setFilter('funding',this)">Funding</button>
+      <button class="filter-btn" onclick="setFilter('provider',this)">Providers</button>
+      <button class="filter-btn" onclick="setFilter('rights',this)">Rights & Advocacy</button>
+    </div>
+
+    <div class="refresh-row">
+      <span class="refresh-status" id="refreshStatus">Fetching latest news…</span>
+      <button class="btn-refresh" onclick="refreshAll()">↻ Refresh</button>
+    </div>
+
+    <div id="statusBanner" class="status-banner"></div>
+    <div id="articlesContainer" class="articles" aria-live="polite" aria-label="News articles"></div>
+  </main>
+
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="promo-card">
+      <h3>🎯 Prep for your assessment</h3>
+      <p>Use our free tool to work through all 12 functional domains and generate your report.</p>
+      <a href="tool.html">Open Free Tool →</a>
+    </div>
+
+    <div class="sidebar-card">
+      <h3>📅 Key NDIS Dates 2026</h3>
+      <div class="key-date">
+        <span class="date-label">1 JULY 2026</span>
+        <span class="date-desc">New Framework Planning commenced — new rules apply to all assessments</span>
+      </div>
+      <div class="key-date">
+        <span class="date-label">1 OCTOBER 2026</span>
+        <span class="date-desc">Community participation budget changes take effect for existing plans</span>
+      </div>
+      <div class="key-date">
+        <span class="date-label">ONGOING</span>
+        <span class="date-desc">Independent assessments rolling out nationally — check with your LAC</span>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h3>🔗 Official Resources</h3>
+      <a class="resource-link" href="https://www.ndis.gov.au" target="_blank" rel="noopener">NDIS Official Website ↗</a>
+      <a class="resource-link" href="https://www.ndiscommission.gov.au" target="_blank" rel="noopener">NDIS Quality & Safeguards Commission ↗</a>
+      <a class="resource-link" href="https://www.dss.gov.au" target="_blank" rel="noopener">Dept. of Social Services ↗</a>
+      <a class="resource-link" href="https://www.dana.org.au" target="_blank" rel="noopener">Disability Advocacy Network Australia ↗</a>
+      <a class="resource-link" href="https://www.ndis.gov.au/participants/working-providers/find-registered-provider" target="_blank" rel="noopener">Find a Registered Provider ↗</a>
+    </div>
+
+    <div class="sidebar-card">
+      <h3>⚡ Quick Tips</h3>
+      <div style="font-size:.82rem;color:var(--text-muted);display:grid;gap:8px;line-height:1.5">
+        <div>✅ Take a support person to your assessment</div>
+        <div>✅ Describe your <em>worst</em> days, not your average</div>
+        <div>✅ Get written evidence from your treating team</div>
+        <div>✅ You can request a different assessor</div>
+        <div>✅ Ask for a copy of the assessor's report</div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="tool.html">Assessment Tool</a>
+    <a href="news.html">NDIS News</a>
+    <a href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" target="_blank" rel="noopener">Get Full Access</a>
+  </div>
+  <div>© 2026 Plan Decoder · Independent NDIS preparation service</div>
+  <div class="footer-disclaimer">News content is sourced from public RSS feeds and is provided for general information only. Plan Decoder is independent and not affiliated with the NDIA or Australian Government.</div>
+</footer>
+
+<script>
+var currentFilter='all';
+var allArticles=[];
+
+var FEEDS=[
+  {name:'NDIS.gov.au',url:'https://www.ndis.gov.au/media/news/rss.xml',tag:'policy'},
+  {name:'NDIS Commission',url:'https://www.ndiscommission.gov.au/rss.xml',tag:'provider'},
+  {name:'DSS Australia',url:'https://www.dss.gov.au/rss/news',tag:'policy'},
+  {name:'ProBono Australia',url:'https://probonoaustralia.com.au/news/category/disability/feed/',tag:'general'},
+  {name:'DANA',url:'https://www.dana.org.au/feed/',tag:'rights'}
+];
+
+var FALLBACK=[
+  {title:'NDIS Framework Planning begins 1 July 2026',desc:'The new Framework Planning process has commenced, with updated rules applying to all new assessments and plan reviews from this date.',link:'https://www.ndis.gov.au',source:'NDIS.gov.au',cat:'policy',date:'1 Jul 2026'},
+  {title:'Community participation supports: what\'s changing in October',desc:'The NDIS is implementing changes to community participation budget structures from 1 October 2026. Participants should review their current plans.',link:'https://www.ndis.gov.au',source:'NDIS.gov.au',cat:'funding',date:'15 Jun 2026'},
+  {title:'Independent assessments: what participants need to know',desc:'The NDIS Quality and Safeguards Commission has released updated guidance on independent assessor requirements and participant rights during the assessment process.',link:'https://www.ndiscommission.gov.au',source:'NDIS Commission',cat:'policy',date:'10 Jun 2026'},
+  {title:'How to prepare for your NDIS plan review in 2026',desc:'With new framework planning rules in place, participants are encouraged to prepare thoroughly before their plan reviews. Key changes affect how functional capacity is assessed.',link:'https://www.ndis.gov.au',source:'NDIS.gov.au',cat:'policy',date:'5 Jun 2026'},
+  {title:'NDIS provider registration changes: new requirements',desc:'The NDIS Quality and Safeguards Commission has outlined updated registration requirements for NDIS providers across all support categories.',link:'https://www.ndiscommission.gov.au',source:'NDIS Commission',cat:'provider',date:'28 May 2026'},
+  {title:'Disability advocacy groups respond to NDIS budget changes',desc:'Peak disability advocacy organisations have responded to proposed changes to NDIS community participation supports, calling for greater participant consultation.',link:'https://www.dana.org.au',source:'DANA',cat:'rights',date:'20 May 2026'},
+  {title:'Support coordinators: updated pricing and guidelines',desc:'DSS has released updated pricing arrangements and practice standards for support coordination. Changes take effect from 1 July 2026.',link:'https://www.dss.gov.au',source:'DSS Australia',cat:'funding',date:'15 May 2026'},
+  {title:'Know your rights: NDIS internal review process explained',desc:'Participants have the right to request an internal review of any NDIS decision. Learn how the process works, timeframes, and what evidence to include.',link:'https://www.ndis.gov.au',source:'NDIS.gov.au',cat:'rights',date:'10 May 2026'}
+];
+
+var CAT_KEYWORDS={
+  policy:['policy','legislation','law','rule','framework','planning','minister','government','reform','act','regulation'],
+  funding:['budget','funding','price','cost','support','money','financial','package','allocation','dollar','spend'],
+  provider:['provider','registration','quality','safeguard','commission','service','standard','audit','compliance'],
+  rights:['advocacy','rights','appeal','review','discrimination','access','inclusion','independent','complaint','tribunal']
+};
+
+function categorise(title,desc){
+  var txt=(title+' '+desc).toLowerCase();
+  for(var cat in CAT_KEYWORDS){
+    for(var i=0;i<CAT_KEYWORDS[cat].length;i++){
+      if(txt.indexOf(CAT_KEYWORDS[cat][i])!==-1)return cat;
+    }
+  }
+  return'general';
+}
+
+function fmtDate(str){
+  if(!str)return'';
+  try{
+    var d=new Date(str);
+    if(isNaN(d.getTime()))return str;
+    return d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+  }catch(e){return str;}
+}
+
+function dedup(arts){
+  var seen={};
+  return arts.filter(function(a){
+    var key=a.title.trim().toLowerCase().substring(0,50);
+    if(seen[key])return false;
+    seen[key]=true;
+    return true;
+  });
+}
+
+function catBadge(cat){
+  var labels={policy:'Policy & Law',funding:'Funding',provider:'Providers',rights:'Rights',general:'General'};
+  return'<span class="article-cat cat-'+(cat||'general')+'">'+(labels[cat]||'General')+'</span>';
+}
+
+function skeleton(){
+  var html='';
+  for(var i=0;i<4;i++){
+    html+='<div class="skeleton">'+
+      '<div class="skel-line skel-sm"></div>'+
+      '<div class="skel-line skel-title"></div>'+
+      '<div class="skel-line skel-body"></div>'+
+      '<div class="skel-line skel-body2"></div>'+
+    '</div>';
+  }
+  return html;
+}
+
+function renderArticles(){
+  var filtered=currentFilter==='all'?allArticles:allArticles.filter(function(a){return a.cat===currentFilter;});
+  var container=document.getElementById('articlesContainer');
+  if(filtered.length===0){
+    container.innerHTML='<div class="no-results">No articles found for this category. <a href="#" onclick="setFilter(\'all\',document.querySelector(\'.filter-btn\'));return false">Show all articles</a></div>';
+    return;
+  }
+  container.innerHTML=filtered.map(function(a){
+    return'<article class="article-card">'+
+      '<div class="article-meta">'+
+        '<span class="article-source">'+esc(a.source)+'</span>'+
+        catBadge(a.cat)+
+        '<span class="article-date">'+esc(a.date||'')+'</span>'+
+      '</div>'+
+      '<h3><a href="'+esc(a.link)+'" target="_blank" rel="noopener noreferrer">'+esc(a.title)+'</a></h3>'+
+      (a.desc?'<p class="article-desc">'+esc(a.desc.substring(0,220)+(a.desc.length>220?'…':''))+'</p>':'')+
+      '<a class="article-link" href="'+esc(a.link)+'" target="_blank" rel="noopener noreferrer">Read more ↗</a>'+
+    '</article>';
+  }).join('');
+}
+
+function setFilter(cat,btn){
+  currentFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderArticles();
+}
+
+async function fetchFeed(feed){
+  var api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed.url)+'&count=10';
+  var resp=await fetch(api,{signal:AbortSignal.timeout(8000)});
+  if(!resp.ok)throw new Error('HTTP '+resp.status);
+  var data=await resp.json();
+  if(data.status!=='ok'||!data.items)throw new Error('Bad feed');
+  return data.items.map(function(item){
+    var desc=(item.description||'').replace(/<[^>]+>/g,'').trim();
+    return{
+      title:item.title||'Untitled',
+      desc:desc,
+      link:item.link||'#',
+      source:feed.name,
+      cat:categorise(item.title,desc),
+      date:fmtDate(item.pubDate)
+    };
+  });
+}
+
+async function refreshAll(){
+  var container=document.getElementById('articlesContainer');
+  var status=document.getElementById('refreshStatus');
+  var lastUpdated=document.getElementById('lastUpdated');
+  container.innerHTML=skeleton();
+  status.textContent='Fetching latest news…';
+
+  var results=await Promise.allSettled(FEEDS.map(fetchFeed));
+  var arts=[];
+  var failCount=0;
+  results.forEach(function(r){
+    if(r.status==='fulfilled')arts=arts.concat(r.value);
+    else failCount++;
+  });
+
+  if(arts.length===0){
+    arts=FALLBACK.map(function(a){return Object.assign({},a);});
+    var banner=document.getElementById('statusBanner');
+    banner.style.display='block';
+    banner.textContent='⚠️ Live feeds are temporarily unavailable. Showing recent curated news. Click Refresh to try again.';
+  }else{
+    document.getElementById('statusBanner').style.display='none';
+  }
+
+  // Sort by most recent
+  arts.sort(function(a,b){
+    var da=new Date(a.date||0);var db=new Date(b.date||0);
+    return db-da;
+  });
+
+  allArticles=dedup(arts);
+  var now=new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
+  status.textContent='Showing '+allArticles.length+' articles'+(failCount?' ('+failCount+' feeds offline)':'');
+  lastUpdated.textContent='Last updated: '+now;
+  renderArticles();
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Init
+refreshAll();
+setInterval(refreshAll,15*60*1000);
+</script>
+</body>
+</html>

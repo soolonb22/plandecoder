@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDIS Reform Toolkit 2026 — Practice Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0F6E56;--teal-light:#E1F5EE;--teal-mid:#1D9E75;
+  --ink:#141414;--ink-soft:#3D3D3A;--muted:#6B6B67;
+  --rule:#E4E2DC;--bg:#FAFAF8;--white:#FFFFFF;
+  --amber:#854F0B;--amber-light:#FAEEDA;
+  --coral:#993C1D;--coral-light:#FAECE7;
+  --font-sans:'Inter',sans-serif;--font-serif:'DM Serif Display',serif;--radius:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;flex-shrink:0;background:var(--white);border-right:1px solid var(--rule);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:50}
+.main{flex:1;margin-left:230px;padding:2rem;max-width:900px}
+.sidebar-logo{padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--rule)}
+.sidebar-logo h1{font-family:var(--font-serif);font-size:15px;color:var(--ink)}
+.sidebar-logo p{font-size:11px;color:var(--muted);margin-top:2px}
+.sidebar-section{padding:.75rem 1rem .25rem;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 1rem;cursor:pointer;font-size:13px;color:var(--ink-soft);border:none;background:none;width:100%;text-align:left;transition:background .12s;border-left:2px solid transparent}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.active{background:var(--teal-light);color:var(--teal);font-weight:500;border-left-color:var(--teal)}
+.nav-num{width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;color:var(--muted)}
+.nav-item.active .nav-num{background:var(--teal);color:#fff;border-color:var(--teal)}
+.sidebar-footer{margin-top:auto;padding:1rem;border-top:1px solid var(--rule);font-size:11px;color:var(--muted);line-height:1.6}
+h2{font-family:var(--font-serif);font-size:1.6rem;color:var(--ink);margin-bottom:.25rem}
+h3{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:.4rem}
+p{color:var(--ink-soft);line-height:1.65}
+.view{display:none}
+.view.active{display:block}
+.mod-header{padding:1.5rem;background:var(--white);border:1px solid var(--rule);border-radius:12px;margin-bottom:1.5rem}
+.mod-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:.6rem}
+.mod-header h2{font-size:1.4rem;margin-bottom:.35rem}
+.mod-header p{font-size:14px;color:var(--muted)}
+.mod-stats{display:flex;gap:1rem;margin-top:.75rem;flex-wrap:wrap}
+.mod-stat{font-size:12px;color:var(--muted)}
+.tab-row{display:flex;gap:0;border-bottom:1px solid var(--rule);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:9px 16px;font-size:13px;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:var(--font-sans)}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:500}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.card{background:var(--white);border:1px solid var(--rule);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:.85rem}
+.field label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{padding:9px 11px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--bg);color:var(--ink);font-size:13px;font-family:var(--font-sans);outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal)}
+.field textarea{min-height:72px;resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--rule);background:var(--white);color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);transition:all .15s}
+.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn-primary:hover{background:#0a5240}
+.btn-sm{padding:5px 11px;font-size:12px}
+.output{background:var(--bg);border:1px solid var(--teal);border-radius:var(--radius);padding:1rem 1.1rem;margin-top:.85rem;font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--ink);display:none}
+.output-actions{display:flex;gap:6px;margin-top:.6rem}
+.checklist{display:flex;flex-direction:column;gap:6px}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--rule);border-radius:var(--radius);cursor:pointer;transition:background .12s}
+.check-item:hover{background:#f0f0ec}
+.check-item input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--teal);width:15px;height:15px}
+.check-item label{font-size:13px;color:var(--ink-soft);cursor:pointer;line-height:1.5}
+.check-item.checked{background:var(--teal-light);border-color:#b2ddd0}
+.check-item.checked label{color:var(--teal)}
+.progress-wrap{margin:.75rem 0}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.progress-bar{height:7px;background:var(--rule);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:4px;transition:width .3s}
+.script-block{background:var(--bg);border-left:3px solid var(--teal);padding:.9rem 1rem;border-radius:0 var(--radius) var(--radius) 0;font-size:13px;color:var(--ink-soft);line-height:1.75;margin:.5rem 0 1rem;font-style:italic}
+.matrix{width:100%;border-collapse:collapse;font-size:12px}
+.matrix th{background:var(--bg);padding:9px 10px;text-align:left;font-weight:600;font-size:12px;border:1px solid var(--rule);color:var(--ink)}
+.matrix td{padding:9px 10px;border:1px solid var(--rule);color:var(--ink-soft);vertical-align:top;line-height:1.5}
+.matrix tr:hover td{background:#f8f8f5}
+.stars{display:flex;gap:3px}
+.star{font-size:24px;cursor:pointer;color:var(--rule);transition:color .1s}
+.star.on{color:#E8A020}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-teal{background:var(--teal-light);color:var(--teal)}
+.badge-amber{background:var(--amber-light);color:var(--amber)}
+.badge-coral{background:var(--coral-light);color:var(--coral)}
+.badge-gray{background:#F1EFE8;color:#5F5E5A}
+.alert{padding:10px 13px;border-radius:var(--radius);font-size:13px;line-height:1.6;margin-bottom:1rem}
+.alert-info{background:var(--teal-light);color:var(--teal);border:1px solid #b2ddd0}
+.alert-warn{background:var(--amber-light);color:var(--amber);border:1px solid #e5c97a}
+.log-entry{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.log-date{font-size:12px;color:var(--muted);min-width:95px;padding-top:2px;flex-shrink:0}
+.step{display:flex;gap:12px;align-items:flex-start;margin-bottom:.85rem}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0}
+.step-body{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);padding:.75rem 1rem;flex:1}
+.step-body h4{font-size:13px;font-weight:600;margin-bottom:.25rem}
+.step-body p{font-size:12px;color:var(--muted)}
+.trans-pair{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.6rem}
+.trans-plain{background:var(--bg);border:1px solid var(--rule);border-radius:var(--radius);padding:.75rem}
+.trans-ndis{background:var(--teal-light);border:1px solid #b2ddd0;border-radius:var(--radius);padding:.75rem}
+.trans-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;color:var(--muted)}
+.trans-ndis .trans-label{color:var(--teal)}
+.trans-text{font-size:13px;color:var(--ink-soft)}
+.template-list{display:flex;flex-direction:column;gap:6px}
+.template-row{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);font-size:13px;color:var(--ink-soft)}
+.home-hero{background:linear-gradient(135deg,#0F6E56,#1D9E75);border-radius:14px;padding:2rem;color:#fff;margin-bottom:1.5rem}
+.home-hero h2{font-family:var(--font-serif);font-size:1.7rem;color:#fff;margin-bottom:.4rem}
+.home-hero p{color:rgba(255,255,255,.85);font-size:14px}
+.home-stats{display:flex;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap}
+.home-stat strong{font-size:1.5rem;font-family:var(--font-serif);display:block;color:#fff}
+.home-stat span{font-size:11px;color:rgba(255,255,255,.7)}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.75rem}
+.mod-card{background:var(--white);border:1px solid var(--rule);border-radius:10px;padding:1rem;cursor:pointer;transition:border-color .15s}
+.mod-card:hover{border-color:var(--teal)}
+.mod-card .icon{font-size:1.5rem;margin-bottom:.5rem}
+.mod-card h3{font-size:13px;font-weight:600;margin-bottom:.25rem}
+.mod-card p{font-size:12px;color:var(--muted);line-height:1.45}
+.ledger-total{font-size:14px;font-weight:600;color:var(--teal);margin-top:.5rem}
+.mobile-nav-btn{display:none;position:fixed;bottom:1rem;right:1rem;z-index:200;background:var(--teal);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+@media(max-width:700px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:1.25rem}
+  .mobile-nav-btn{display:flex;align-items:center;justify-content:center}
+  .card-grid,.field-row,.trans-pair{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div style="background:#0F6E56;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-family:Inter,sans-serif;position:sticky;top:0;z-index:999"><a href="index.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px"><span style="background:rgba(255,255,255,.2);padding:3px 8px;border-radius:6px;font-size:12px">← Hub</span> Know Your NDIS</a><span style="color:rgba(255,255,255,.7);font-size:12px">knowyourndisrights.com.au</span></div>
+<div class="app">
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><h1>NDIS Reform Toolkit</h1><p>Practice Edition 2026</p></div>
+  <div class="sidebar-section">Navigation</div>
+  <button class="nav-item active" onclick="showView('home',this)"><span class="nav-num">⌂</span>Overview</button>
+  <div class="sidebar-section">Modules</div>
+  <button class="nav-item" onclick="showView('m1',this)"><span class="nav-num">1</span>Functional Capacity</button>
+  <button class="nav-item" onclick="showView('m2',this)"><span class="nav-num">2</span>Thriving Kids</button>
+  <button class="nav-item" onclick="showView('m3',this)"><span class="nav-num">3</span>R&amp;N Planning</button>
+  <button class="nav-item" onclick="showView('m4',this)"><span class="nav-num">4</span>Psychosocial</button>
+  <button class="nav-item" onclick="showView('m5',this)"><span class="nav-num">5</span>Provider Compliance</button>
+  <button class="nav-item" onclick="showView('m6',this)"><span class="nav-num">6</span>Integrity &amp; Records</button>
+  <button class="nav-item" onclick="showView('m7',this)"><span class="nav-num">7</span>Mainstream Systems</button>
+  <button class="nav-item" onclick="showView('m8',this)"><span class="nav-num">8</span>Empowerment</button>
+  <div class="sidebar-footer">Not legal or professional advice.<br>Verify all NDIS policy with NDIA.<br><br>© 2026 NDIS Reform Toolkit</div>
+</div>
+<button class="mobile-nav-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+<div class="main">
+
+<!-- HOME -->
+<div class="view active" id="view-home">
+  <div class="home-hero">
+    <h2>NDIS Reform Toolkit</h2>
+    <p>Practice Edition 2026 — 8 modules, 25 tools, 40+ templates</p>
+    <div class="home-stats">
+      <div class="home-stat"><strong>8</strong><span>Modules</span></div>
+      <div class="home-stat"><strong>25</strong><span>Tools</span></div>
+      <div class="home-stat"><strong>40+</strong><span>Templates</span></div>
+      <div class="home-stat"><strong>3</strong><span>AI-powered</span></div>
+    </div>
+  </div>
+  <h3 style="margin-bottom:.75rem">Select a module to begin</h3>
+  <div class="mod-grid">
+    <div class="mod-card" onclick="showViewByName('m1')"><div class="icon">📋</div><h3>Functional Capacity</h3><p>Evidence builder, language translator, outcome matrix</p></div>
+    <div class="mod-card" onclick="showViewByName('m2')"><div class="icon">👶</div><h3>Thriving Kids</h3><p>Transition pathway, continuity plan, referral scripts</p></div>
+    <div class="mod-card" onclick="showViewByName('m3')"><div class="icon">📝</div><h3>R&amp;N Planning</h3><p>Goal builder, R&amp;N checklist, renewal pack generator</p></div>
+    <div class="mod-card" onclick="showViewByName('m4')"><div class="icon">🧠</div><h3>Psychosocial</h3><p>Function log, domain mapper, advocacy scripts</p></div>
+    <div class="mod-card" onclick="showViewByName('m5')"><div class="icon">✅</div><h3>Provider Compliance</h3><p>Audit dashboard, incident logger, digital checklist</p></div>
+    <div class="mod-card" onclick="showViewByName('m6')"><div class="icon">🔒</div><h3>Integrity &amp; Records</h3><p>Session ledger, outcome receipts, pricing matrix</p></div>
+    <div class="mod-card" onclick="showViewByName('m7')"><div class="icon">🤝</div><h3>Mainstream Systems</h3><p>School plan builder, clinical bridge, comm scripts</p></div>
+    <div class="mod-card" onclick="showViewByName('m8')"><div class="icon">💪</div><h3>Empowerment</h3><p>Rights, 2026 reforms, goal workshop, experience log</p></div>
+  </div>
+  <div class="alert alert-warn" style="margin-top:1.5rem">⚠️ General educational information only. Not legal, clinical, or professional advice. Verify all NDIS policy with the NDIA directly before acting on any content in this toolkit.</div>
+</div>
+
+<!-- MODULE 1 -->
+<div class="view" id="view-m1">
+  <div class="mod-header"><div class="mod-badge badge-teal">Module 1</div><h2>Functional Capacity Access Toolkit</h2><p>Evidence builder, NDIS language translation, and outcome matrix for access requests and plan reviews.</p><div class="mod-stats"><span class="mod-stat">🔧 5 tools</span><span class="mod-stat">📄 6 templates</span><span class="mod-stat">🤖 AI-powered</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m1t1')">Evidence Builder</button>
+    <button class="tab" onclick="switchTab(this,'m1t2')">Language Translator</button>
+    <button class="tab" onclick="switchTab(this,'m1t3')">Daily Living</button>
+    <button class="tab" onclick="switchTab(this,'m1t4')">Exec Functioning</button>
+    <button class="tab" onclick="switchTab(this,'m1t5')">Outcome Matrix</button>
+    <button class="tab" onclick="switchTab(this,'m1t6')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m1t1">
+    <div class="card"><h3>🔧 Tool 1 — Functional Capacity Evidence Builder</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Generates a structured NDIS evidence statement for access requests or plan reviews.</p>
+      <div class="field-row"><div class="field"><label>Area of daily life</label><select id="fc-area"><option>Daily living &amp; self-care</option><option>Executive functioning</option><option>Sensory regulation</option><option>Social participation</option><option>Safety &amp; behaviour</option><option>Communication</option><option>Mobility</option></select></div><div class="field"><label>Impact level</label><select id="fc-impact"><option>Severe — unable to perform without support</option><option>Substantial — requires consistent support</option><option>Moderate — requires some support</option></select></div></div>
+      <div class="field"><label>Describe what the person cannot do or does with difficulty</label><textarea id="fc-desc" placeholder="e.g. Cannot initiate morning routine without verbal prompting every 5 minutes..."></textarea></div>
+      <div class="field-row"><div class="field"><label>How long has this been the case?</label><input type="text" id="fc-dur" placeholder="e.g. Since age 4, consistently 3+ years"></div><div class="field"><label>Evidence available</label><select id="fc-ev"><option>OT assessment report</option><option>Paediatrician / GP report</option><option>Psychologist report</option><option>School observation records</option><option>Parent / carer statement</option><option>Behaviour support plan</option></select></div></div>
+      <button class="btn btn-primary" onclick="generateFC()">✦ Generate evidence statement</button>
+      <div class="output" id="fc-out"></div>
+      <div class="output-actions" id="fc-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('fc-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('fc-out','NDIS_Evidence_Statement')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m1t2">
+    <div class="card"><h3>🤖 Tool 2 — NDIS Language Translator (AI-powered)</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Converts plain-language descriptions into NDIS-aligned functional capacity phrasing.</p>
+      <div class="field"><label>Your plain-language description</label><textarea id="lang-in" placeholder="e.g. My child has meltdowns every day and can't cope at school..."></textarea></div>
+      <button class="btn btn-primary" onclick="translateLang()">✦ Translate to NDIS language</button>
+      <div class="output" id="lang-out"></div>
+      <div class="output-actions" id="lang-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('lang-out')">Copy</button></div>
+    </div>
+    <div class="card"><h3>Quick reference translations</h3>
+      <div class="trans-pair"><div class="trans-plain"><div class="trans-label">Plain language</div><div class="trans-text">"Can't get dressed without help"</div></div><div class="trans-ndis"><div class="trans-label">NDIS-aligned</div><div class="trans-text">"Requires physical and verbal assistance with self-care tasks due to motor coordination and executive functioning impairment"</div></div></div>
+      <div class="trans-pair"><div class="trans-plain"><div class="trans-label">Plain language</div><div class="trans-text">"Has meltdowns when overwhelmed"</div></div><div class="trans-ndis"><div class="trans-label">NDIS-aligned</div><div class="trans-text">"Experiences significant dysregulation responses to sensory and social stimuli, impacting safety and community participation"</div></div></div>
+      <div class="trans-pair"><div class="trans-plain"><div class="trans-label">Plain language</div><div class="trans-text">"Struggles to make friends"</div></div><div class="trans-ndis"><div class="trans-label">NDIS-aligned</div><div class="trans-text">"Demonstrates substantially reduced capacity for reciprocal social interaction and peer relationship formation, limiting community participation"</div></div></div>
+      <div class="trans-pair"><div class="trans-plain"><div class="trans-label">Plain language</div><div class="trans-text">"Forgets everything and needs reminders"</div></div><div class="trans-ndis"><div class="trans-label">NDIS-aligned</div><div class="trans-text">"Experiences persistent deficits in prospective memory and working memory, requiring consistent external prompting to complete daily living tasks"</div></div></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m1t3">
+    <div class="card"><h3>🔧 Tool 3 — Daily Living Impact Checklist</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Tick all areas where support is needed. Checked items form part of your functional capacity evidence.</p>
+      <div class="progress-wrap"><div class="progress-label"><span>Areas identified</span><span id="dl-count">0 / 10</span></div><div class="progress-bar"><div class="progress-fill" id="dl-bar" style="width:0%"></div></div></div>
+      <div class="checklist" id="dl-list">
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Personal hygiene — bathing, grooming, dental care</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Dressing — selecting and putting on appropriate clothing</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Meal preparation and eating safely</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Mobility within the home</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Toileting and continence management</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Sleep routine — getting to sleep, staying asleep, waking</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Managing medications safely</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Household tasks — cleaning, laundry, dishes</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Managing finances and appointments</label></div>
+        <div class="check-item" onclick="tc(this,'dl-bar','dl-count',10)"><input type="checkbox"><label>Getting to and from community activities</label></div>
+      </div>
+      <div style="margin-top:.75rem"><button class="btn btn-sm btn-primary" onclick="exportCL('dl-list','Daily Living Impact Checklist')">Download summary</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m1t4">
+    <div class="card"><h3>🔧 Tool 4 — Executive Functioning Profile</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Structured self-report covering planning, initiation, and cognitive flexibility for NDIS evidence.</p>
+      <div class="progress-wrap"><div class="progress-label"><span>Areas identified</span><span id="ef-count">0 / 8</span></div><div class="progress-bar"><div class="progress-fill" id="ef-bar" style="width:0%"></div></div></div>
+      <div class="checklist" id="ef-list">
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Starting tasks without external prompting (initiation)</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Planning and organising multi-step activities</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Switching between tasks or activities (cognitive flexibility)</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Managing time — being on time, not losing track of hours</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Remembering appointments and commitments</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Controlling impulses and emotional responses</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Maintaining focus and attention for extended periods</label></div>
+        <div class="check-item" onclick="tc(this,'ef-bar','ef-count',8)"><input type="checkbox"><label>Problem-solving when things change unexpectedly</label></div>
+      </div>
+      <div style="margin-top:.75rem"><button class="btn btn-sm btn-primary" onclick="exportCL('ef-list','Executive Functioning Profile')">Download summary</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m1t5">
+    <div class="card"><h3>🔧 Tool 5 — Capacity → Outcome Matrix</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Links each functional limitation to NDIS domains, measurable outcomes, and required supports.</p>
+      <table class="matrix"><thead><tr><th>Functional limitation</th><th>NDIS domain</th><th>Measurable outcome</th><th>Supports needed</th></tr></thead><tbody>
+        <tr><td>Cannot initiate self-care</td><td>Daily activities</td><td>Complete morning routine independently 4/5 days with visual schedule</td><td>OT task analysis; daily support worker</td></tr>
+        <tr><td>Sensory dysregulation</td><td>Social &amp; community participation</td><td>Access 3 community settings/week with reduced meltdown frequency</td><td>Sensory OT; support worker community access</td></tr>
+        <tr><td>Executive functioning deficit</td><td>Learning</td><td>Maintain school attendance 3+ days/week, reduced behavioural incidents</td><td>Learning support; specialist support coordination</td></tr>
+        <tr><td>Communication impairment</td><td>Communication</td><td>Communicate basic needs using AAC device 80% of opportunities</td><td>Speech pathologist; AAC device; SW training</td></tr>
+        <tr><td>Unsafe in community alone</td><td>Daily activities / social</td><td>Access community with 1:1 support 5 days/week, no safety incidents</td><td>Support worker 1:1; behaviour support</td></tr>
+        <tr><td>Psychosocial disability</td><td>Social &amp; community participation</td><td>Maintain stable housing and attend 2 community activities/week</td><td>Support coordination; daily living supports</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="tab-panel" id="m1t6">
+    <div class="card"><h3>Module 1 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Daily Living Impact Checklist</span><button class="btn btn-sm" onclick="dlT('Daily_Living_Impact_Checklist')">Download</button></div>
+      <div class="template-row"><span>Executive Functioning Profile</span><button class="btn btn-sm" onclick="dlT('Executive_Functioning_Profile')">Download</button></div>
+      <div class="template-row"><span>Sensory Regulation Profile</span><button class="btn btn-sm" onclick="dlT('Sensory_Regulation_Profile')">Download</button></div>
+      <div class="template-row"><span>School Observation Sheet</span><button class="btn btn-sm" onclick="dlT('School_Observation_Sheet')">Download</button></div>
+      <div class="template-row"><span>Parent / Carer Statement</span><button class="btn btn-sm" onclick="dlT('Parent_Carer_Statement')">Download</button></div>
+      <div class="template-row"><span>Clinician Functional Capacity Report</span><button class="btn btn-sm" onclick="dlT('Clinician_FC_Report')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 2 -->
+<div class="view" id="view-m2">
+  <div class="mod-header"><div class="mod-badge badge-teal">Module 2</div><h2>Thriving Kids Transition Toolkit</h2><p>Navigate early childhood transitions from NDIS to mainstream supports while protecting therapy continuity.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m2t1')">Transition Pathway</button>
+    <button class="tab" onclick="switchTab(this,'m2t2')">Continuity Plan Builder</button>
+    <button class="tab" onclick="switchTab(this,'m2t3')">Referral Scripts</button>
+    <button class="tab" onclick="switchTab(this,'m2t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m2t1">
+    <div class="alert alert-info">ℹ️ Thriving Kids replaces early childhood NDIS support for many children under 9 from 2026. Follow this 5-step pathway.</div>
+    <div class="card"><h3>🔧 Tool 6 — Thriving Kids Transition Pathway</h3>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Determine if Thriving Kids applies</h4><p>Check child's age (under 9), current NDIS status, and disability type. Children with permanent and significant disability may still access NDIS directly.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Request a transition meeting with your Early Childhood Partner</h4><p>Ask for a written transition plan at least 3 months before any changes. Document all conversations in writing.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Map all current therapies and services</h4><p>List provider, frequency, goals, and what will happen post-transition. Use the Continuity Plan Builder in the next tab.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Connect school and GP before transition</h4><p>Provide a School Handover Template and GP communication sheet so support doesn't fall through the gaps.</p></div></div>
+      <div class="step" style="margin-bottom:0"><div class="step-num" style="background:var(--teal-light);color:var(--teal)">✓</div><div class="step-body" style="background:var(--teal-light);border-color:#b2ddd0"><h4 style="color:var(--teal)">Submit formal review if dissatisfied</h4><p style="color:var(--teal);opacity:.85">Use Module 4 advocacy scripts to request an internal review or ART external review if the transition decision seems wrong.</p></div></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m2t2">
+    <div class="card"><h3>🔧 Tool 7 — Therapy Continuity Plan Builder</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Map each current therapy and plan what happens after the NDIS transition.</p>
+      <div id="therapy-rows">
+        <div class="therapy-row card" style="padding:.85rem;margin-bottom:.5rem">
+          <div class="field-row"><div class="field"><label>Therapy / service</label><input type="text" placeholder="e.g. Occupational Therapy"></div><div class="field"><label>Provider</label><input type="text" placeholder="e.g. ABC Allied Health"></div></div>
+          <div class="field-row"><div class="field"><label>Frequency</label><input type="text" placeholder="e.g. Weekly, 1 hour"></div><div class="field"><label>Post-transition plan</label><select><option>Continue via school</option><option>Continue via Medicare / GP plan</option><option>Continue via community health</option><option>Family-funded privately</option><option>At risk — advocacy needed</option></select></div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem"><button class="btn btn-sm" onclick="addThRow()">+ Add therapy</button><button class="btn btn-sm btn-primary" onclick="genCont()">Generate plan</button></div>
+      <div class="output" id="cont-out"></div>
+      <div class="output-actions" id="cont-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('cont-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('cont-out','Therapy_Continuity_Plan')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m2t3">
+    <div class="card"><h3>🔧 Tool 8 — Referral Scripts</h3>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Requesting a transition meeting</h4>
+      <div class="script-block">"Hi, I'm calling because my child [name] is currently accessing early childhood NDIS supports. I understand there are changes under the Thriving Kids pathway. I'd like to request a formal transition planning meeting in writing so we can map what supports will continue and ensure there are no gaps."</div>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Talking to your child's school</h4>
+      <div class="script-block">"We're transitioning away from NDIS early childhood supports. [Child's name] currently receives OT/speech/etc. Can we schedule a meeting to go through the School Handover Template? I also want to discuss what adjustments the school can provide under the Disability Standards for Education 2005."</div>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">GP referral for Medicare plans</h4>
+      <div class="script-block">"I need to discuss a GP Management Plan and Team Care Arrangement for [child's name]. [He/She/They] has been accessing therapy through the NDIS but we're transitioning to Thriving Kids. I'd like to access Medicare-funded allied health to continue OT and psychology."</div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m2t4">
+    <div class="card"><h3>Module 2 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Transition Roadmap</span><button class="btn btn-sm" onclick="dlT('Transition_Roadmap')">Download</button></div>
+      <div class="template-row"><span>School Handover Template</span><button class="btn btn-sm" onclick="dlT('School_Handover_Template')">Download</button></div>
+      <div class="template-row"><span>GP / Paediatrician Communication Sheet</span><button class="btn btn-sm" onclick="dlT('GP_Communication_Sheet')">Download</button></div>
+      <div class="template-row"><span>Therapy Continuity Plan</span><button class="btn btn-sm" onclick="dlT('Therapy_Continuity_Plan')">Download</button></div>
+      <div class="template-row"><span>Early Childhood Referral Scripts</span><button class="btn btn-sm" onclick="dlT('EC_Referral_Scripts')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 3 -->
+<div class="view" id="view-m3">
+  <div class="mod-header"><div class="mod-badge badge-amber">Module 3</div><h2>Reasonable &amp; Necessary Planning Toolkit</h2><p>Justify supports, write measurable goals, and prepare for plan renewals with confidence.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span><span class="mod-stat">🤖 AI-powered</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m3t1')">Goal Builder</button>
+    <button class="tab" onclick="switchTab(this,'m3t2')">R&amp;N Checklist</button>
+    <button class="tab" onclick="switchTab(this,'m3t3')">Renewal Pack</button>
+    <button class="tab" onclick="switchTab(this,'m3t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m3t1">
+    <div class="card"><h3>🤖 Tool 9 — NDIS Goal Co-Design Builder (AI-powered)</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Converts participant aspirations into measurable, NDIS-aligned goals.</p>
+      <div class="field"><label>What does the participant want to achieve? (in their words)</label><textarea id="goal-in" placeholder="e.g. I want to be able to catch the bus by myself and go to the shops..."></textarea></div>
+      <div class="field-row"><div class="field"><label>Support category</label><select id="goal-cat"><option>Daily activities</option><option>Social &amp; community participation</option><option>Employment</option><option>Learning</option><option>Health &amp; wellbeing</option><option>Home environment</option></select></div><div class="field"><label>Timeframe</label><select id="goal-tf"><option>6 months</option><option>12 months</option><option>2 years</option></select></div></div>
+      <button class="btn btn-primary" onclick="buildGoal()">✦ Build NDIS goal</button>
+      <div class="output" id="goal-out"></div>
+      <div class="output-actions" id="goal-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('goal-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('goal-out','NDIS_Goal')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m3t2">
+    <div class="card"><h3>🔧 Tool 10 — R&amp;N 7-Criteria Checklist</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Each support must satisfy all 7 criteria to qualify as reasonable and necessary under the NDIS Act.</p>
+      <div class="progress-wrap"><div class="progress-label"><span>Criteria met</span><span id="rn-count">0 / 7</span></div><div class="progress-bar"><div class="progress-fill" id="rn-bar" style="width:0%"></div></div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Related to the participant's disability (not a mainstream responsibility)</label></div>
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Represents value for money compared to alternatives</label></div>
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Will be effective and beneficial given the participant's needs</label></div>
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Takes into account informal supports from family/carers</label></div>
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Takes into account supports from other systems (health, education)</label></div>
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Consistent with the participant's goals and aspirations</label></div>
+        <div class="check-item" onclick="tc(this,'rn-bar','rn-count',7)"><input type="checkbox"><label>Supports capacity building or independence where relevant</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m3t3">
+    <div class="card"><h3>🔧 Tool 11 — Pre-Review Evidence Pack Generator</h3>
+      <div class="alert alert-info">ℹ️ Start preparing at least 3 months before your plan end date.</div>
+      <div class="field-row"><div class="field"><label>Plan end date</label><input type="date" id="ren-date"></div><div class="field"><label>Plan value (approx)</label><input type="text" id="ren-val" placeholder="e.g. $48,000"></div></div>
+      <div class="field"><label>Achievements this plan period</label><textarea id="ren-ach" placeholder="e.g. Increased independence in morning routine, attending community activities twice weekly..."></textarea></div>
+      <div class="field"><label>Ongoing support needs and why</label><textarea id="ren-need" placeholder="e.g. Ongoing OT required to maintain gains and address emerging needs..."></textarea></div>
+      <button class="btn btn-primary" onclick="genRenewal()">✦ Generate renewal pack</button>
+      <div class="output" id="ren-out"></div>
+      <div class="output-actions" id="ren-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('ren-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('ren-out','Pre_Review_Evidence_Pack')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m3t4">
+    <div class="card"><h3>Module 3 Templates</h3><div class="template-list">
+      <div class="template-row"><span>R&amp;N Evidence Checklist</span><button class="btn btn-sm" onclick="dlT('RN_Evidence_Checklist')">Download</button></div>
+      <div class="template-row"><span>Support Justification Sheet</span><button class="btn btn-sm" onclick="dlT('Support_Justification_Sheet')">Download</button></div>
+      <div class="template-row"><span>Measurable Goal Templates</span><button class="btn btn-sm" onclick="dlT('Measurable_Goal_Templates')">Download</button></div>
+      <div class="template-row"><span>Outcome Tracking Sheets</span><button class="btn btn-sm" onclick="dlT('Outcome_Tracking_Sheets')">Download</button></div>
+      <div class="template-row"><span>Pre-Review Evidence Pack</span><button class="btn btn-sm" onclick="dlT('Pre_Review_Evidence_Pack')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 4 -->
+<div class="view" id="view-m4">
+  <div class="mod-header"><div class="mod-badge badge-coral">Module 4</div><h2>Psychosocial &amp; Fluctuating Conditions Toolkit</h2><p>ADHD, trauma, mental health, chronic illness — demonstrating disability that changes day to day.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m4t1')">Function Log</button>
+    <button class="tab" onclick="switchTab(this,'m4t2')">Domain Mapper</button>
+    <button class="tab" onclick="switchTab(this,'m4t3')">Advocacy Scripts</button>
+    <button class="tab" onclick="switchTab(this,'m4t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m4t1">
+    <div class="card"><h3>🔧 Tool 12 — Daily Function Log</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Track daily functional levels to demonstrate fluctuating or episodic disability to the NDIA.</p>
+      <div class="field-row"><div class="field"><label>Date</label><input type="date" id="log-date"></div><div class="field"><label>Overall function (1=very low, 5=good)</label><div class="stars" id="fn-stars"><span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span><span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span><span class="star" onclick="setRating(5)">★</span></div></div></div>
+      <div class="field-row"><div class="field"><label>Self-care completed?</label><select id="log-sc"><option>Fully independently</option><option>With verbal prompts</option><option>With physical assistance</option><option>Not completed</option></select></div><div class="field"><label>Community participation</label><select id="log-cm"><option>Participated fully</option><option>Participated with support</option><option>Attempted, had to leave</option><option>Unable to participate</option></select></div></div>
+      <div class="field"><label>Cause / triggers / notes</label><textarea id="log-notes" placeholder="e.g. Woke at 3am, high anxiety, sensory overload at school, required 2 hours to regulate..."></textarea></div>
+      <button class="btn btn-primary" onclick="addLog()">+ Add entry</button>
+    </div>
+    <div id="log-entries"></div>
+  </div>
+  <div class="tab-panel" id="m4t2">
+    <div class="card"><h3>🔧 Tool 13 — Psychosocial Function Domain Mapper</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Rate current functioning across key psychosocial domains (1=severely impaired, 10=unaffected).</p>
+      <div id="psych-sliders" style="display:flex;flex-direction:column;gap:1rem"></div>
+      <button class="btn btn-primary" style="margin-top:1rem" onclick="genMap()">✦ Generate function summary</button>
+      <div class="output" id="map-out"></div>
+      <div class="output-actions" id="map-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('map-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('map-out','Psychosocial_Function_Map')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m4t3">
+    <div class="card"><h3>🔧 Tool 14 — Advocacy Scripts</h3>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Explaining "good days vs bad days"</h4>
+      <div class="script-block">"I want to explain something important about [name]'s disability. The NDIS uses the term 'episodic' — meaning the impairment fluctuates. On good days, [he/she/they] can appear to function well. But this is misleading. The supports required are needed consistently because the bad days are unpredictable and severe, and without supports in place, the person cannot participate in daily life or community safely."</div>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Requesting support for psychosocial disability</h4>
+      <div class="script-block">"[Name]'s mental health condition results in a permanent and significant psychosocial disability. While medication and therapy help manage symptoms, they do not eliminate the functional impact. The NDIS is not funding treatment — it's funding the supports [name] needs to participate in daily life and the community, which would otherwise be impossible."</div>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Requesting an internal review</h4>
+      <div class="script-block">"I'm requesting an internal review of [name]'s plan decision under section 100 of the NDIS Act. The plan does not adequately reflect [his/her/their] support needs. I'm attaching an updated functional capacity assessment, a daily function log covering [time period], and a statement from [clinician] confirming ongoing and enduring impairment."</div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m4t4">
+    <div class="card"><h3>Module 4 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Daily / Weekly Function Log</span><button class="btn btn-sm" onclick="dlT('Daily_Function_Log')">Download</button></div>
+      <div class="template-row"><span>Episodic Impact Summary</span><button class="btn btn-sm" onclick="dlT('Episodic_Impact_Summary')">Download</button></div>
+      <div class="template-row"><span>Trauma-Informed Functional Capacity Sheet</span><button class="btn btn-sm" onclick="dlT('Trauma_Informed_FC_Sheet')">Download</button></div>
+      <div class="template-row"><span>Planning Meeting Scripts</span><button class="btn btn-sm" onclick="dlT('Planning_Meeting_Scripts')">Download</button></div>
+      <div class="template-row"><span>Access Request Scripts</span><button class="btn btn-sm" onclick="dlT('Access_Request_Scripts')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 5 -->
+<div class="view" id="view-m5">
+  <div class="mod-header"><div class="mod-badge badge-teal">Module 5</div><h2>Provider Compliance &amp; Registration Toolkit</h2><p>Stay audit-ready and ensure quality and safeguarding compliance under 2026 NDIS rules.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m5t1')">Audit Dashboard</button>
+    <button class="tab" onclick="switchTab(this,'m5t2')">Incident Logger</button>
+    <button class="tab" onclick="switchTab(this,'m5t3')">Digital Checklist</button>
+    <button class="tab" onclick="switchTab(this,'m5t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m5t1">
+    <div class="card"><h3>🔧 Tool 15 — Audit Readiness Dashboard</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Track compliance status across all NDIS quality and safeguarding domains.</p>
+      <div class="progress-wrap"><div class="progress-label"><span>Audit readiness</span><span id="aud-count">0 / 10</span></div><div class="progress-bar"><div class="progress-fill" id="aud-bar" style="width:0%"></div></div></div>
+      <div class="checklist">
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Worker screening checks current for all staff</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Incident management system operational and up to date</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Participant service agreements in place and signed</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Complaints policy accessible and communicated to participants</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Code of Conduct training completed for all workers</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>SIL participant records complete and audit-ready</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Restrictive practice records maintained and authorised</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Financial records reconciled against NDIA claims</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Privacy policy current and staff trained</label></div>
+        <div class="check-item" onclick="tc(this,'aud-bar','aud-count',10)"><input type="checkbox"><label>Quality improvement activities documented</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m5t2">
+    <div class="card"><h3>🔧 Tool 16 — Incident Report Logger</h3>
+      <div class="field-row"><div class="field"><label>Date of incident</label><input type="date" id="inc-date"></div><div class="field"><label>Incident type</label><select id="inc-type"><option>Unexpected death</option><option>Serious injury</option><option>Abuse or neglect</option><option>Unlawful sexual contact</option><option>Unauthorised restrictive practice</option><option>Other reportable incident</option></select></div></div>
+      <div class="field"><label>Incident description (factual, objective)</label><textarea id="inc-desc" placeholder="State what occurred, who was involved, and the immediate response..."></textarea></div>
+      <div class="field-row"><div class="field"><label>Immediate action taken</label><input type="text" id="inc-act" placeholder="e.g. Emergency services called, participant safe"></div><div class="field"><label>Commission notification?</label><select id="inc-ntf"><option>Yes — within 24 hours</option><option>Yes — within 5 days</option><option>No — internal record only</option></select></div></div>
+      <button class="btn btn-primary" onclick="genInc()">✦ Generate incident report</button>
+      <div class="output" id="inc-out"></div>
+      <div class="output-actions" id="inc-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('inc-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('inc-out','Incident_Report')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m5t3">
+    <div class="card"><h3>🔧 Tool 17 — Digital Service Integrity Checklist</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">For providers using digital or hybrid service delivery.</p>
+      <div class="checklist">
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Participant consent obtained for digital service delivery</label></div>
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Platform complies with Australian Privacy Principles</label></div>
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Data stored in Australia or with appropriate international safeguards</label></div>
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Session records maintained for audit purposes</label></div>
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Participant access to their own records provided on request</label></div>
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Digital platform accessible (WCAG 2.1 AA minimum)</label></div>
+        <div class="check-item" onclick="tc(this,null,null,0)"><input type="checkbox"><label>Data breach notification procedure in place</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m5t4">
+    <div class="card"><h3>Module 5 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Audit Readiness Checklist</span><button class="btn btn-sm" onclick="dlT('Audit_Readiness_Checklist')">Download</button></div>
+      <div class="template-row"><span>Incident Reporting Template</span><button class="btn btn-sm" onclick="dlT('Incident_Reporting_Template')">Download</button></div>
+      <div class="template-row"><span>SIL Monitoring Sheet</span><button class="btn btn-sm" onclick="dlT('SIL_Monitoring_Sheet')">Download</button></div>
+      <div class="template-row"><span>Digital Privacy Checklist</span><button class="btn btn-sm" onclick="dlT('Digital_Privacy_Checklist')">Download</button></div>
+      <div class="template-row"><span>Quality Indicator Tracking Sheet</span><button class="btn btn-sm" onclick="dlT('Quality_Indicator_Tracking')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 6 -->
+<div class="view" id="view-m6">
+  <div class="mod-header"><div class="mod-badge badge-teal">Module 6</div><h2>Integrity, Fraud &amp; Record-Keeping Toolkit</h2><p>Clean records, compliant invoicing, and evidence of service delivery for every session.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m6t1')">Session Ledger</button>
+    <button class="tab" onclick="switchTab(this,'m6t2')">Outcome Receipt</button>
+    <button class="tab" onclick="switchTab(this,'m6t3')">Pricing Matrix</button>
+    <button class="tab" onclick="switchTab(this,'m6t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m6t1">
+    <div class="card"><h3>🔧 Tool 18 — NDIS Transaction Ledger</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Log every service with outcome evidence for audit readiness.</p>
+      <div class="field-row"><div class="field"><label>Date</label><input type="date" id="led-date"></div><div class="field"><label>Participant name / ID</label><input type="text" id="led-part" placeholder="e.g. John S. / NDIS 123456"></div></div>
+      <div class="field-row"><div class="field"><label>Support category</label><select id="led-cat"><option>Daily activities (01)</option><option>Social participation (04)</option><option>Support coordination (07)</option><option>Improved living arrangements (08)</option><option>Increased social participation (09)</option><option>Finding &amp; keeping a job (10)</option><option>Improved health &amp; wellbeing (11)</option><option>Improved learning (12)</option><option>Improved daily living (15)</option></select></div><div class="field"><label>Hours delivered</label><input type="number" id="led-hrs" placeholder="2" min="0" step="0.5"></div></div>
+      <div class="field-row"><div class="field"><label>Unit price ($/hr)</label><input type="number" id="led-rate" placeholder="67.56" min="0" step="0.01"></div><div class="field"><label>Outcome achieved</label><input type="text" id="led-out" placeholder="e.g. Completed grocery shopping independently"></div></div>
+      <button class="btn btn-primary" onclick="addLed()">+ Add to ledger</button>
+      <div id="ledger-wrap" style="display:none">
+        <table class="matrix" style="margin-top:1rem"><thead><tr><th>Date</th><th>Category</th><th>Hrs</th><th>Amount</th><th>Outcome</th></tr></thead><tbody id="led-body"></tbody></table>
+        <p class="ledger-total">Total: $<span id="led-total">0.00</span></p>
+        <button class="btn btn-sm" onclick="exportLed()" style="margin-top:.5rem">Export ledger</button>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m6t2">
+    <div class="card"><h3>🔧 Tool 19 — Session Outcome Receipt Generator</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Generate an evidence-of-service receipt for each session.</p>
+      <div class="field-row"><div class="field"><label>Session date</label><input type="date" id="rec-date"></div><div class="field"><label>Worker name</label><input type="text" id="rec-wkr" placeholder="e.g. Sarah M."></div></div>
+      <div class="field-row"><div class="field"><label>Participant</label><input type="text" id="rec-prt" placeholder="e.g. Alex B."></div><div class="field"><label>Duration</label><input type="text" id="rec-dur" placeholder="e.g. 2 hours 30 mins"></div></div>
+      <div class="field"><label>Functional outcome achieved this session</label><textarea id="rec-out-t" placeholder="Describe what the participant achieved or worked toward..."></textarea></div>
+      <button class="btn btn-primary" onclick="genReceipt()">✦ Generate receipt</button>
+      <div class="output" id="rec-out"></div>
+      <div class="output-actions" id="rec-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('rec-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('rec-out','Session_Outcome_Receipt')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m6t3">
+    <div class="card"><h3>🔧 Tool 20 — Support Pricing Matrix (2025–26)</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Common NDIS support categories and indicative 2025–26 price guide rates.</p>
+      <table class="matrix"><thead><tr><th>Support</th><th>Item code</th><th>Rate range</th><th>Notes</th></tr></thead><tbody>
+        <tr><td>Support Worker — Weekday Standard</td><td>01_011_0107_1_1</td><td>$67.56–$72.88/hr</td><td>Mon–Fri standard hours</td></tr>
+        <tr><td>Support Worker — Evening</td><td>01_011_0107_1_1</td><td>$74.31/hr</td><td>After 8pm or before 6am</td></tr>
+        <tr><td>Support Worker — Saturday</td><td>01_011_0107_1_1</td><td>$94.60/hr</td><td>All Saturday hours</td></tr>
+        <tr><td>Support Worker — Sunday</td><td>01_011_0107_1_1</td><td>$121.65/hr</td><td>All Sunday hours</td></tr>
+        <tr><td>Support Coordination</td><td>07_002_0106_8</td><td>$100.14/hr</td><td>Level 2</td></tr>
+        <tr><td>Specialist Support Coordination</td><td>07_004_0132_8</td><td>$190.54/hr</td><td>Level 3 — complex needs</td></tr>
+        <tr><td>Occupational Therapy</td><td>15_056_0128_1_3</td><td>$193.99/hr</td><td>Assessment and therapy</td></tr>
+        <tr><td>Speech Pathology</td><td>15_057_0128_1_3</td><td>$193.99/hr</td><td>Assessment and therapy</td></tr>
+        <tr><td>Psychology</td><td>15_053_0128_1_3</td><td>$234.83/hr</td><td>Functional assessment</td></tr>
+      </tbody></table>
+      <div class="alert alert-warn" style="margin-top:.75rem">⚠️ Rates are indicative. Always verify against the current NDIA Price Guide before invoicing.</div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m6t4">
+    <div class="card"><h3>Module 6 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Session Outcome Receipts</span><button class="btn btn-sm" onclick="dlT('Session_Outcome_Receipts')">Download</button></div>
+      <div class="template-row"><span>Service Log Sheets</span><button class="btn btn-sm" onclick="dlT('Service_Log_Sheets')">Download</button></div>
+      <div class="template-row"><span>Pricing Category Map</span><button class="btn btn-sm" onclick="dlT('Pricing_Category_Map')">Download</button></div>
+      <div class="template-row"><span>Evidence of Service Templates</span><button class="btn btn-sm" onclick="dlT('Evidence_Of_Service')">Download</button></div>
+      <div class="template-row"><span>Invoice Compliance Checklist</span><button class="btn btn-sm" onclick="dlT('Invoice_Compliance_Checklist')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 7 -->
+<div class="view" id="view-m7">
+  <div class="mod-header"><div class="mod-badge badge-teal">Module 7</div><h2>Mainstream System Collaboration Toolkit</h2><p>Bridge NDIS and mainstream systems — schools, GPs, paediatricians, and community supports.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m7t1')">School Plan Builder</button>
+    <button class="tab" onclick="switchTab(this,'m7t2')">Clinical Bridge Sheet</button>
+    <button class="tab" onclick="switchTab(this,'m7t3')">Communication Scripts</button>
+    <button class="tab" onclick="switchTab(this,'m7t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m7t1">
+    <div class="card"><h3>🔧 Tool 21 — School Collaboration Plan Builder</h3>
+      <div class="field-row"><div class="field"><label>Child's name</label><input type="text" id="sch-nm" placeholder="e.g. Alex"></div><div class="field"><label>Year level</label><input type="text" id="sch-yr" placeholder="e.g. Year 4"></div></div>
+      <div class="field"><label>Current NDIS goal (relevant to school)</label><textarea id="sch-gl" placeholder="e.g. Alex will increase independent participation in structured activities..."></textarea></div>
+      <div class="field"><label>Current school adjustments in place</label><textarea id="sch-adj" placeholder="e.g. Quiet corner, visual schedule, 1:1 aide 2 hours daily..."></textarea></div>
+      <div class="field"><label>Additional adjustments needed</label><textarea id="sch-nd" placeholder="e.g. Sensory toolkit in classroom, extended time for assessments..."></textarea></div>
+      <button class="btn btn-primary" onclick="genSchool()">✦ Generate collaboration plan</button>
+      <div class="output" id="sch-out"></div>
+      <div class="output-actions" id="sch-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('sch-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('sch-out','School_Collaboration_Plan')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m7t2">
+    <div class="card"><h3>🔧 Tool 22 — Clinical–Mainstream Bridge Sheet Generator</h3>
+      <div class="field-row"><div class="field"><label>Participant name</label><input type="text" id="br-nm" placeholder="e.g. Jordan"></div><div class="field"><label>Primary diagnosis / disability</label><input type="text" id="br-dg" placeholder="e.g. Autism, ADHD, ABI"></div></div>
+      <div class="field"><label>Current therapy goals (one per line)</label><textarea id="br-gl" placeholder="1. Increase attention span to 15 minutes&#10;2. Improve expressive communication&#10;3. Reduce sensory meltdown frequency"></textarea></div>
+      <div class="field"><label>Key strategies that work (for school / GP to use)</label><textarea id="br-st" placeholder="e.g. Countdown timers before transitions, weighted blanket, visual choice boards..."></textarea></div>
+      <button class="btn btn-primary" onclick="genBridge()">✦ Generate bridge sheet</button>
+      <div class="output" id="br-out"></div>
+      <div class="output-actions" id="br-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('br-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('br-out','Clinical_Bridge_Sheet')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m7t3">
+    <div class="card"><h3>🔧 Tool 23 — Communication Scripts</h3>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Requesting school adjustments under the DDA</h4>
+      <div class="script-block">"Under the Disability Discrimination Act 1992 and the Disability Standards for Education 2005, [name]'s school is required to make reasonable adjustments to ensure [he/she/they] can participate in education on the same basis as other students. I'm requesting a meeting to discuss what adjustments the school will put in place, and to share strategies that have been effective in therapeutic settings."</div>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Requesting a GP care plan for allied health</h4>
+      <div class="script-block">"I'd like to discuss a GP Management Plan and Team Care Arrangement for [name]. [He/She/They] has a chronic condition affecting daily functioning and would benefit from Medicare-funded allied health including OT and psychology. Can we complete the relevant forms today?"</div>
+      <h4 style="font-size:13px;margin:.5rem 0 .3rem">Connecting with community supports</h4>
+      <div class="script-block">"We're looking for community supports that don't require NDIS funding — inclusive sports programs, social groups, or community activities [name] could access as a community member. Can you help us identify what's available locally that would be appropriate for someone with [name]'s needs?"</div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m7t4">
+    <div class="card"><h3>Module 7 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Shared Support Plan</span><button class="btn btn-sm" onclick="dlT('Shared_Support_Plan')">Download</button></div>
+      <div class="template-row"><span>Teacher Observation Sheet</span><button class="btn btn-sm" onclick="dlT('Teacher_Observation_Sheet')">Download</button></div>
+      <div class="template-row"><span>GP / Clinician Summary Sheet</span><button class="btn btn-sm" onclick="dlT('GP_Clinician_Summary')">Download</button></div>
+      <div class="template-row"><span>Community Participation Directory</span><button class="btn btn-sm" onclick="dlT('Community_Participation_Directory')">Download</button></div>
+      <div class="template-row"><span>Communication Scripts Pack</span><button class="btn btn-sm" onclick="dlT('Communication_Scripts_Pack')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MODULE 8 -->
+<div class="view" id="view-m8">
+  <div class="mod-header"><div class="mod-badge badge-gray">Module 8</div><h2>Participant Empowerment &amp; Advocacy Toolkit</h2><p>Rights, confidence, and a clear understanding of what the 2026 reforms mean for you.</p><div class="mod-stats"><span class="mod-stat">🔧 3 tools</span><span class="mod-stat">📄 5 templates</span></div></div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'m8t1')">Rights &amp; Reforms</button>
+    <button class="tab" onclick="switchTab(this,'m8t2')">Goal Workshop</button>
+    <button class="tab" onclick="switchTab(this,'m8t3')">Experience Log</button>
+    <button class="tab" onclick="switchTab(this,'m8t4')">Templates</button>
+  </div>
+  <div class="tab-panel active" id="m8t1">
+    <div class="card"><h3>🔧 Tool 23 — Rights &amp; 2026 Reforms Explainer</h3>
+      <h4 style="font-size:13px;margin-bottom:.5rem">Your rights as an NDIS participant</h4>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:1rem">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to choose your own providers</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to a plan that reflects your actual support needs</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to request an internal review of any NDIA decision</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to take unresolved disputes to the Administrative Review Tribunal (ART)</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to a support person, advocate, or interpreter at meetings</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to access your own NDIS records</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--teal);padding:7px 10px;background:var(--teal-light);border-radius:var(--radius)">✓ Right to make a complaint to the NDIS Quality and Safeguards Commission</div>
+      </div>
+      <h4 style="font-size:13px;margin-bottom:.75rem">Key 2026 reforms — plain language</h4>
+      <div style="display:flex;flex-direction:column;gap:.6rem">
+        <div style="border-left:3px solid var(--amber);padding:.75rem 1rem;background:var(--amber-light);border-radius:0 var(--radius) var(--radius) 0"><p style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:.2rem">Needs assessment replaces functional capacity assessment</p><p style="font-size:12px;color:var(--ink-soft)">A new structured tool will determine what supports you need. Allied health evidence remains critical.</p></div>
+        <div style="border-left:3px solid var(--teal);padding:.75rem 1rem;background:var(--teal-light);border-radius:0 var(--radius) var(--radius) 0"><p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:.2rem">Thriving Kids changes early childhood access</p><p style="font-size:12px;color:var(--ink-soft)">Children under 9 may be redirected to Thriving Kids mainstream supports. See Module 2.</p></div>
+        <div style="border-left:3px solid #3B6D11;padding:.75rem 1rem;background:#EAF3DE;border-radius:0 var(--radius) var(--radius) 0"><p style="font-size:13px;font-weight:600;color:#3B6D11;margin-bottom:.2rem">Support lists clarify what NDIS will and won't fund</p><p style="font-size:12px;color:var(--ink-soft)">New "support lists" define NDIS-funded supports. Everyday items and health costs remain excluded.</p></div>
+        <div style="border-left:3px solid var(--coral);padding:.75rem 1rem;background:var(--coral-light);border-radius:0 var(--radius) var(--radius) 0"><p style="font-size:13px;font-weight:600;color:var(--coral);margin-bottom:.2rem">Provider registration requirements tighten</p><p style="font-size:12px;color:var(--ink-soft)">More providers will need formal registration. This may affect choice and control for participants.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m8t2">
+    <div class="card"><h3>🔧 Tool 24 — Planning Meeting Prep Workshop</h3><p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Work through these 4 questions to build your planning meeting prep sheet.</p>
+      <div class="field"><label>1. What are the most important things in your life right now?</label><textarea id="ws1" placeholder="Think about your daily routine, relationships, activities you love or want to do more of..."></textarea></div>
+      <div class="field"><label>2. What does your disability stop you from doing that you want to do?</label><textarea id="ws2" placeholder="Be honest and specific — this becomes the basis of your NDIS goals..."></textarea></div>
+      <div class="field"><label>3. What supports do you have that are working well?</label><textarea id="ws3" placeholder="Think about family, community programs, therapy, support workers..."></textarea></div>
+      <div class="field"><label>4. What support do you need that you don't currently have?</label><textarea id="ws4" placeholder="Be specific about what would make a real difference to your daily life..."></textarea></div>
+      <button class="btn btn-primary" onclick="genWorkshop()">✦ Generate prep sheet</button>
+      <div class="output" id="ws-out"></div>
+      <div class="output-actions" id="ws-actions" style="display:none"><button class="btn btn-sm" onclick="copyOut('ws-out')">Copy</button><button class="btn btn-sm" onclick="downloadOut('ws-out','Planning_Meeting_Prep')">Download</button></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m8t3">
+    <div class="card"><h3>🔧 Tool 25 — Participant Experience Log</h3><p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">Record your experiences with the NDIS for advocacy, complaints, and service improvement.</p>
+      <div class="field-row"><div class="field"><label>Date</label><input type="date" id="exp-date"></div><div class="field"><label>Type of experience</label><select id="exp-type"><option>Planning meeting</option><option>NDIA decision received</option><option>Support worker interaction</option><option>Provider issue</option><option>Complaint lodged</option><option>Positive outcome</option><option>Other</option></select></div></div>
+      <div class="field"><label>What happened? (factual, objective)</label><textarea id="exp-desc" placeholder="Record what occurred, who was involved, what was said or decided..."></textarea></div>
+      <div class="field"><label>Impact on you / the participant</label><textarea id="exp-imp" placeholder="How did this affect daily life, wellbeing, or NDIS access?"></textarea></div>
+      <button class="btn btn-primary" onclick="addExp()">+ Add to log</button>
+      <div id="exp-entries" style="margin-top:.75rem"></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="m8t4">
+    <div class="card"><h3>Module 8 Templates</h3><div class="template-list">
+      <div class="template-row"><span>Reform Explainer Sheets</span><button class="btn btn-sm" onclick="dlT('Reform_Explainer_Sheets')">Download</button></div>
+      <div class="template-row"><span>Rights &amp; Advocacy Cards</span><button class="btn btn-sm" onclick="dlT('Rights_Advocacy_Cards')">Download</button></div>
+      <div class="template-row"><span>Goal-Setting Worksheets</span><button class="btn btn-sm" onclick="dlT('Goal_Setting_Worksheets')">Download</button></div>
+      <div class="template-row"><span>Experience Log Templates</span><button class="btn btn-sm" onclick="dlT('Experience_Log_Templates')">Download</button></div>
+      <div class="template-row"><span>Planning Meeting Prep Sheet</span><button class="btn btn-sm" onclick="dlT('Planning_Meeting_Prep_Sheet')">Download</button></div>
+    </div></div>
+  </div>
+</div>
+
+</div></div>
+
+<script>
+// NAV
+function showView(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+}
+const vMap={m1:2,m2:3,m3:4,m4:5,m5:6,m6:7,m7:8,m8:9};
+function showViewByName(id){showView(id,document.querySelectorAll('.nav-item')[vMap[id]]);}
+
+// TABS
+function switchTab(btn,pid){
+  const row=btn.closest('.tab-row');
+  const view=btn.closest('.view');
+  row.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  view.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(pid).classList.add('active');
+}
+
+// CHECKLIST
+function tc(item,barId,cntId,total){
+  const cb=item.querySelector('input[type=checkbox]');
+  cb.checked=!cb.checked;
+  item.classList.toggle('checked',cb.checked);
+  if(!barId)return;
+  const checked=item.closest('.checklist').querySelectorAll('.check-item.checked').length;
+  document.getElementById(barId).style.width=Math.round(checked/total*100)+'%';
+  document.getElementById(cntId).textContent=checked+' / '+total;
+}
+
+// OUTPUT HELPERS
+function showOut(id,text){const el=document.getElementById(id);el.textContent=text;el.style.display='block';const a=document.getElementById(id.replace('-out','-actions'));if(a)a.style.display='flex';}
+function copyOut(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{const b=event.target;b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);}).catch(()=>alert('Select and copy the text manually.'));}
+function downloadOut(id,name){const blob=new Blob([document.getElementById(id).textContent],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.txt';a.click();}
+function dlT(name){const blob=new Blob([`NDIS REFORM TOOLKIT — PRACTICE EDITION 2026\n${name.replace(/_/g,' ')}\n\nComplete the fields relevant to your situation.\n\nParticipant name:\nDate:\nCompleted by:\nNDIS number (if applicable):\n\n────────────────────────────────────\n\nNot legal or professional advice. Verify all NDIS policy with the NDIA directly.\n`],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.txt';a.click();}
+function exportCL(listId,name){const items=document.getElementById(listId).querySelectorAll('.check-item');let text=name+'\nGenerated: '+new Date().toLocaleDateString('en-AU')+'\n\n';items.forEach(i=>{text+=(i.classList.contains('checked')?'[✓] ':'[ ] ')+i.querySelector('label').textContent+'\n';});const blob=new Blob([text],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name.replace(/ /g,'_')+'.txt';a.click();}
+
+// STARS
+let rating=0;
+function setRating(n){rating=n;document.querySelectorAll('#fn-stars .star').forEach((s,i)=>s.classList.toggle('on',i<n));}
+
+// AI CALL
+async function ai(prompt,outId,actId,fallback){
+  const el=document.getElementById(outId);el.textContent='Generating…';el.style.display='block';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    el.textContent=d.content?.[0]?.text||fallback;
+    const a=document.getElementById(actId);if(a)a.style.display='flex';
+  }catch(e){el.textContent=fallback;const a=document.getElementById(actId);if(a)a.style.display='flex';}
+}
+
+// M1
+function generateFC(){
+  const area=document.getElementById('fc-area').value;
+  const impact=document.getElementById('fc-impact').value.split('—')[0].trim();
+  const desc=document.getElementById('fc-desc').value||'[describe functional impact]';
+  const dur=document.getElementById('fc-dur').value||'[duration]';
+  const ev=document.getElementById('fc-ev').value;
+  showOut('fc-out',`FUNCTIONAL CAPACITY EVIDENCE STATEMENT\nDate: ${new Date().toLocaleDateString('en-AU')}\n\nArea: ${area}\nImpact Level: ${impact}\n\nFunctional impact:\n${desc}\n\nDuration: This functional limitation has been present for ${dur}.\n\nEvidence: ${ev}\n\nThis impairment is permanent and enduring. The participant requires ongoing funded NDIS supports to participate in daily life and the community on the same basis as other Australians without disability.\n\n─ Not legal advice. Have a qualified professional review before submitting. ─`);
+}
+function translateLang(){
+  const input=document.getElementById('lang-in').value;
+  if(!input.trim()){alert('Please enter a description first.');return;}
+  ai(`You are an NDIS language specialist. Translate this plain-language description into professional NDIS-aligned functional capacity language. Use terms like "functional limitation", "enduring impairment", "capacity for", "participation in daily life". Be specific and factual. Return only the translated text, no preamble.\n\nPlain language: "${input}"`,
+    'lang-out','lang-actions',
+    `NDIS-aligned:\n\n"Demonstrates significant and enduring functional impairment impacting capacity for ${input.substring(0,60)}..., resulting in substantially reduced participation in daily activities and community life. This impairment is permanent in nature and is not expected to resolve without ongoing funded supports."`);
+}
+
+// M2
+function addThRow(){const c=document.getElementById('therapy-rows');const d=document.createElement('div');d.className='therapy-row card';d.style.cssText='padding:.85rem;margin-bottom:.5rem';d.innerHTML='<div class="field-row"><div class="field"><label>Therapy / service</label><input type="text" placeholder="e.g. Speech Pathology"></div><div class="field"><label>Provider</label><input type="text" placeholder="e.g. XYZ Allied Health"></div></div><div class="field-row"><div class="field"><label>Frequency</label><input type="text" placeholder="e.g. Fortnightly"></div><div class="field"><label>Post-transition plan</label><select><option>Continue via school</option><option>Continue via Medicare / GP plan</option><option>Continue via community health</option><option>Family-funded privately</option><option>At risk — advocacy needed</option></select></div></div>';c.appendChild(d);}
+function genCont(){const rows=document.querySelectorAll('.therapy-row');let p='THERAPY CONTINUITY PLAN\nGenerated: '+new Date().toLocaleDateString('en-AU')+'\n\n';rows.forEach((r,i)=>{const ins=r.querySelectorAll('input');const sel=r.querySelector('select');p+=`${i+1}. ${ins[0]?.value||'[therapy]'} — ${ins[1]?.value||'[provider]'}\n   Frequency: ${ins[2]?.value||'[frequency]'}\n   Post-transition: ${sel?.value||'[plan]'}\n\n`;});p+='RISKS:\nServices marked "At risk" require immediate advocacy.\n\nACTIONS:\n□ Share with school\n□ Request GP Management Plan for Medicare services\n□ Register on community health waitlists\n□ Document all transition conversations in writing';showOut('cont-out',p);}
+
+// M3
+function buildGoal(){
+  const asp=document.getElementById('goal-in').value;
+  if(!asp.trim()){alert('Please enter a participant aspiration first.');return;}
+  const cat=document.getElementById('goal-cat').value;
+  const tf=document.getElementById('goal-tf').value;
+  ai(`Convert this participant aspiration into a measurable NDIS goal. Format exactly as:\n\nNDIS GOAL:\n[SMART goal statement]\n\nSUCCESS LOOKS LIKE:\n[2-3 measurable outcomes]\n\nSUPPORTS THAT HELP:\n[brief bulleted list]\n\nAspiration: "${asp}"\nSupport category: ${cat}\nTimeframe: ${tf}\n\nNo preamble. Exact format only.`,
+    'goal-out','goal-actions',
+    `NDIS GOAL:\nWithin ${tf}, participant will increase independence in ${cat.toLowerCase()} with targeted support, demonstrating measurable progress toward their stated aspiration.\n\nSUCCESS LOOKS LIKE:\n• Achieves stated goal in 3 out of 5 opportunities with decreasing support\n• Demonstrates increased confidence and reduced reliance on prompting\n• Reports improved wellbeing and community connection\n\nSUPPORTS THAT HELP:\n• Allied health (as relevant)\n• Support worker — skill-building focus\n• Assistive technology (if applicable)`);
+}
+function genRenewal(){
+  const date=document.getElementById('ren-date').value;
+  const val=document.getElementById('ren-val').value||'[plan value]';
+  const ach=document.getElementById('ren-ach').value||'[achievements]';
+  const need=document.getElementById('ren-need').value||'[ongoing needs]';
+  showOut('ren-out',`PRE-REVIEW EVIDENCE PACK\nGenerated: ${new Date().toLocaleDateString('en-AU')}\nPlan end date: ${date||'[date]'} | Plan value: ${val}\n\nACHIEVEMENTS THIS PLAN PERIOD:\n${ach}\n\nONGOING SUPPORT NEEDS:\n${need}\n\nEVIDENCE CHECKLIST:\n□ Updated functional capacity assessment (request 8+ weeks before review)\n□ Progress reports from all therapy providers\n□ Updated parent / carer statement\n□ New NDIS-aligned goals documented\n□ Any changes to disability or circumstances noted\n□ Support worker observations collected\n\nIMPORTANT: Request your planning meeting in writing and confirm the date by email.`);
+}
+
+// M4
+let logs=[];
+function addLog(){
+  const date=document.getElementById('log-date').value;
+  const notes=document.getElementById('log-notes').value;
+  if(!date||!notes){alert('Please enter a date and notes.');return;}
+  const sc=document.getElementById('log-sc').value;
+  const cm=document.getElementById('log-cm').value;
+  const r=rating||'?';
+  const badge=r<=2?'badge-coral':r>=4?'badge-teal':'badge-amber';
+  const label=r<=2?'Low day':r>=4?'Good day':'Moderate day';
+  const cont=document.getElementById('log-entries');
+  if(!cont.querySelector('h3')){const h=document.createElement('h3');h.style.cssText='margin:.75rem 0 .5rem';h.textContent='Logged entries';cont.prepend(h);}
+  const e=document.createElement('div');e.className='log-entry';
+  e.innerHTML=`<div class="log-date">${date}</div><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:13px;font-weight:500">Function: ${r}/5</span><span class="badge ${badge}" style="font-size:11px">${label}</span></div><p style="font-size:12px;color:var(--muted)">Self-care: ${sc} | Community: ${cm}</p><p style="font-size:13px;margin-top:4px;color:var(--ink-soft)">${notes}</p></div>`;
+  cont.appendChild(e);
+  document.getElementById('log-date').value='';document.getElementById('log-notes').value='';
+  rating=0;document.querySelectorAll('#fn-stars .star').forEach(s=>s.classList.remove('on'));
+}
+const psychD=[{l:'Self-care & hygiene',id:'pd1'},{l:'Emotional regulation',id:'pd2'},{l:'Social interaction',id:'pd3'},{l:'Executive functioning',id:'pd4'},{l:'Community participation',id:'pd5'},{l:'Work / study capacity',id:'pd6'}];
+(function(){const c=document.getElementById('psych-sliders');psychD.forEach(d=>{const div=document.createElement('div');div.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><label style="font-weight:500">${d.l}</label><span id="${d.id}-v" style="color:var(--muted)">5 / 10</span></div><input type="range" min="1" max="10" value="5" style="width:100%;accent-color:var(--teal)" oninput="document.getElementById('${d.id}-v').textContent=this.value+' / 10'">`;c.appendChild(div);});})();
+function genMap(){
+  const vals=psychD.map(d=>{const el=document.querySelector(`#psych-sliders input[oninput*="${d.id}"]`);return{l:d.l,v:parseInt(el?.value||5)};});
+  const avg=(vals.reduce((a,b)=>a+b.v,0)/vals.length).toFixed(1);
+  const low=vals.filter(v=>v.v<4);
+  let out=`PSYCHOSOCIAL FUNCTION MAP\nDate: ${new Date().toLocaleDateString('en-AU')}\nAverage function score: ${avg} / 10\n\n`;
+  vals.forEach(v=>{out+=`${v.l.padEnd(28)} ${'█'.repeat(v.v)}${'░'.repeat(10-v.v)} ${v.v}/10\n`;});
+  if(low.length)out+=`\nSIGNIFICANT IMPAIRMENT (below 4/10):\n${low.map(v=>`• ${v.l}: ${v.v}/10`).join('\n')}\n\nThese areas demonstrate enduring functional impairment consistent with NDIS eligibility for psychosocial disability support.`;
+  showOut('map-out',out);
+}
+
+// M5
+function genInc(){
+  const date=document.getElementById('inc-date').value;
+  const type=document.getElementById('inc-type').value;
+  const desc=document.getElementById('inc-desc').value||'[description]';
+  const act=document.getElementById('inc-act').value||'[actions taken]';
+  const ntf=document.getElementById('inc-ntf').value;
+  showOut('inc-out',`NDIS INCIDENT REPORT\nDate: ${date||'[date]'} | Type: ${type}\nPrepared: ${new Date().toLocaleDateString('en-AU')}\n\nINCIDENT DESCRIPTION:\n${desc}\n\nIMMEDIATE ACTIONS TAKEN:\n${act}\n\nNDIS COMMISSION NOTIFICATION: ${ntf}\n\nFOLLOW-UP CHECKLIST:\n□ Commission notification submitted (if required)\n□ Participant / family / guardian notified\n□ Internal debrief completed\n□ Risk assessment reviewed and updated\n□ Corrective action plan developed\n□ Record stored securely for audit purposes`);
+}
+
+// M6
+let ledTotal=0;
+function addLed(){
+  const date=document.getElementById('led-date').value;
+  const hrs=parseFloat(document.getElementById('led-hrs').value)||0;
+  const rate=parseFloat(document.getElementById('led-rate').value)||0;
+  const outcome=document.getElementById('led-out').value||'[outcome]';
+  if(!date||!hrs||!rate){alert('Please complete date, hours, and rate.');return;}
+  const amount=(hrs*rate).toFixed(2);
+  ledTotal+=parseFloat(amount);
+  document.getElementById('ledger-wrap').style.display='block';
+  const row=document.getElementById('led-body').insertRow();
+  [date,document.getElementById('led-cat').value.split('(')[0].trim(),hrs+'h','$'+amount,outcome].forEach(t=>{const c=row.insertCell();c.textContent=t;c.style.fontSize='12px';});
+  document.getElementById('led-total').textContent=ledTotal.toFixed(2);
+  document.getElementById('led-date').value='';document.getElementById('led-hrs').value='';document.getElementById('led-out').value='';
+}
+function exportLed(){
+  const rows=document.querySelectorAll('#led-body tr');
+  let txt=`NDIS TRANSACTION LEDGER\nExported: ${new Date().toLocaleDateString('en-AU')}\n\n`;
+  rows.forEach(r=>{txt+=Array.from(r.cells).map(c=>c.textContent).join(' | ')+'\n';});
+  txt+=`\nTOTAL: $${ledTotal.toFixed(2)}`;
+  const blob=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NDIS_Transaction_Ledger.txt';a.click();
+}
+function genReceipt(){
+  const date=document.getElementById('rec-date').value;
+  const wkr=document.getElementById('rec-wkr').value||'[worker]';
+  const prt=document.getElementById('rec-prt').value||'[participant]';
+  const dur=document.getElementById('rec-dur').value||'[duration]';
+  const out=document.getElementById('rec-out-t').value||'[outcome]';
+  showOut('rec-out',`SESSION OUTCOME RECEIPT\n${'─'.repeat(40)}\nDate: ${date||'[date]'}\nParticipant: ${prt}\nSupport Worker: ${wkr}\nDuration: ${dur}\n${'─'.repeat(40)}\nOUTCOME ACHIEVED:\n${out}\n${'─'.repeat(40)}\nThis receipt confirms NDIS-funded supports were delivered as described. This record is maintained for compliance, audit, and participant review purposes.\n\nWorker signature: _______________________\nDate signed: ${date||'[date]'}`);
+}
+
+// M7
+function genSchool(){
+  const nm=document.getElementById('sch-nm').value||'[child]';
+  const yr=document.getElementById('sch-yr').value||'[year level]';
+  const gl=document.getElementById('sch-gl').value||'[NDIS goal]';
+  const adj=document.getElementById('sch-adj').value||'[current adjustments]';
+  const nd=document.getElementById('sch-nd').value||'[needed adjustments]';
+  showOut('sch-out',`SCHOOL COLLABORATION PLAN\nStudent: ${nm} | Year: ${yr}\nDate: ${new Date().toLocaleDateString('en-AU')}\n\nNDIS GOAL (relevant to school context):\n${gl}\n\nCURRENT SCHOOL ADJUSTMENTS IN PLACE:\n${adj}\n\nADDITIONAL ADJUSTMENTS REQUESTED:\n${nd}\n\nNEXT STEPS:\n□ School to confirm additional adjustments in writing\n□ Review meeting scheduled for: ___________\n□ Copy shared with: OT / speech pathologist / support coordinator\n□ Progress review: 6 weeks from today\n\nNote: Under the Disability Standards for Education 2005, schools are required to make reasonable adjustments so students with disability can participate on the same basis as other students.`);
+}
+function genBridge(){
+  const nm=document.getElementById('br-nm').value||'[participant]';
+  const dg=document.getElementById('br-dg').value||'[diagnosis]';
+  const gl=document.getElementById('br-gl').value||'[goals]';
+  const st=document.getElementById('br-st').value||'[strategies]';
+  showOut('br-out',`CLINICAL–MAINSTREAM BRIDGE SHEET\nParticipant: ${nm} | Diagnosis/disability: ${dg}\nPrepared: ${new Date().toLocaleDateString('en-AU')}\n\nCURRENT THERAPY GOALS:\n${gl}\n\nKEY STRATEGIES — please use consistently:\n${st}\n\nGENERAL APPROACH:\n• Predictable routines with advance notice of changes\n• Written/visual instructions alongside verbal\n• Low-stimulation environment when needed\n• Strengths-based, calm, patient communication\n• Avoid sudden changes and repeated verbal instructions when overwhelmed\n\nFOR QUESTIONS: Contact the treating therapist before making significant changes to strategies.`);
+}
+
+// M8
+function genWorkshop(){
+  const q1=document.getElementById('ws1').value||'[not answered]';
+  const q2=document.getElementById('ws2').value||'[not answered]';
+  const q3=document.getElementById('ws3').value||'[not answered]';
+  const q4=document.getElementById('ws4').value||'[not answered]';
+  showOut('ws-out',`NDIS PLANNING MEETING PREPARATION SHEET\nPrepared: ${new Date().toLocaleDateString('en-AU')}\n\nWHAT MATTERS MOST TO ME:\n${q1}\n\nWHAT MY DISABILITY STOPS ME FROM DOING:\n${q2}\n\nSUPPORTS THAT ARE WORKING:\n${q3}\n\nSUPPORTS I NEED THAT I DON'T HAVE:\n${q4}\n\nBEFORE YOUR PLANNING MEETING:\n□ Bring this document\n□ Bring a support person or advocate\n□ Bring any new assessments or clinician reports\n□ Write down your questions in advance\n□ Ask for a copy of your new plan BEFORE agreeing to it\n□ You do NOT have to agree to a plan on the day\n\nIF YOUR PLAN DOESN'T REFLECT YOUR NEEDS:\n→ Request an internal review (section 100, NDIS Act)\n→ Contact a disability advocate: DANA — dana.org.au\n→ QAI (Queensland): qai.org.au | 07 3844 4200`);
+}
+function addExp(){
+  const date=document.getElementById('exp-date').value;
+  const desc=document.getElementById('exp-desc').value;
+  if(!date||!desc){alert('Please enter a date and description.');return;}
+  const type=document.getElementById('exp-type').value;
+  const imp=document.getElementById('exp-imp').value;
+  const cont=document.getElementById('exp-entries');
+  const e=document.createElement('div');e.className='log-entry';
+  e.innerHTML=`<div class="log-date">${date}</div><div style="flex:1"><span class="badge badge-gray" style="margin-bottom:4px;font-size:11px">${type}</span><p style="font-size:13px;margin-top:4px;color:var(--ink-soft)">${desc}</p>${imp?`<p style="font-size:12px;color:var(--muted);margin-top:3px">Impact: ${imp}</p>`:''}</div>`;
+  cont.appendChild(e);
+  document.getElementById('exp-date').value='';document.getElementById('exp-desc').value='';document.getElementById('exp-imp').value='';
+}
+</script>
+</body>
+</html>

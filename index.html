@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plan Decoder | Support Needs Prep Tool</title>
+<meta name="description" content="Free NDIS assessment preparation tool. Describe your support needs across 12 areas of daily life. Build a plain language summary for your plan review.">
+<style>
+:root{
+  --purple:#5B2D7E;--purple-dark:#3E1F57;--purple-soft:#F3EDF8;
+  --teal:#0E7C86;--teal-soft:#E6F4F5;--teal-bright:#7FD8DF;
+  --amber:#B45309;--amber-soft:#FEF3C7;
+  --green:#15803D;
+  --bg:#FAF9FC;--card:#fff;--border:#E5E1EC;
+  --text:#26243B;--muted:#5B5870;--radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:1.02rem;line-height:1.65}
+a{color:var(--teal);text-decoration:none}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* NAV */
+.nav{background:var(--purple-dark);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.nav-logo{color:#fff;font-weight:800;font-size:1.1rem;letter-spacing:-.4px}
+.nav-logo span{color:var(--teal-bright)}
+.nav-links{display:flex;gap:22px;align-items:center}
+.nav-links a{color:rgba(255,255,255,.8);font-size:.9rem;font-weight:600}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:#fff;color:var(--purple-dark)!important;font-weight:800;padding:9px 20px;border-radius:10px;font-size:.88rem}
+
+/* TICKER */
+.ticker{background:var(--teal);color:#fff;font-size:.85rem;font-weight:600;padding:10px 24px;text-align:center;line-height:1.5}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple) 100%);padding:70px 24px 62px;text-align:center;color:#fff}
+.hero-tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);font-size:.76rem;font-weight:700;padding:6px 15px;border-radius:20px;margin-bottom:18px;letter-spacing:.5px;text-transform:uppercase}
+.hero h1{font-size:clamp(1.8rem,4vw,2.7rem);font-weight:800;line-height:1.2;margin-bottom:16px;max-width:680px;margin-left:auto;margin-right:auto}
+.hero h1 span{color:var(--teal-bright)}
+.hero p{font-size:1.02rem;opacity:.92;max-width:560px;margin:0 auto 30px}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-hero-primary{background:#fff;color:var(--purple-dark);font-weight:800;padding:16px 36px;border-radius:12px;font-size:1rem;display:inline-block}
+.btn-hero-primary:hover{opacity:.92}
+.btn-hero-secondary{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.4);color:#fff;font-weight:700;padding:14px 28px;border-radius:12px;font-size:.95rem;display:inline-block}
+.hero-trust{margin-top:30px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap;font-size:.82rem;opacity:.8}
+
+/* FEATURES */
+.features{padding:56px 24px;max-width:940px;margin:0 auto}
+.section-tag{font-size:.76rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+.features h2{font-size:1.7rem;font-weight:800;color:var(--purple-dark);margin-bottom:34px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.ff{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;gap:14px;align-items:flex-start}
+.ff-icon{font-size:1.6rem;flex-shrink:0}
+.ff h4{font-size:.98rem;font-weight:800;color:var(--purple-dark);margin-bottom:5px}
+.ff p{font-size:.86rem;color:var(--muted)}
+
+/* PRICING */
+.pricing{padding:56px 24px;background:var(--purple-soft)}
+.pricing-inner{max-width:860px;margin:0 auto;text-align:center}
+.pricing h2{font-size:1.7rem;font-weight:800;color:var(--purple-dark);margin-bottom:10px}
+.pricing-sub{color:var(--muted);font-size:.95rem;margin-bottom:32px;max-width:520px;margin-left:auto;margin-right:auto}
+.price-table{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 14px rgba(62,31,87,.08);font-size:.92rem;text-align:left}
+.price-table th{padding:16px 14px;font-weight:800;color:var(--purple-dark);border-bottom:2px solid var(--border);text-align:center}
+.price-table th:first-child{text-align:left}
+.price-table th.hl{background:var(--teal-soft);color:var(--teal)}
+.price-table td{padding:14px;border-bottom:1px solid #F1EEF6;text-align:center;color:var(--text)}
+.price-table td:first-child{text-align:left;font-weight:600}
+.price-table td.hl{background:#F4FBFC}
+.price-table tr:last-child td{border-bottom:none;font-weight:700}
+.price-cta{margin-top:26px}
+@media(max-width:640px){.price-table{font-size:.8rem}.price-table th,.price-table td{padding:10px 8px}}
+
+/* NEWS TEASER */
+.news-teaser{background:var(--purple-dark);padding:48px 24px;text-align:center;color:#fff}
+.news-teaser .section-tag{color:var(--teal-bright)}
+.news-teaser h2{font-size:1.5rem;font-weight:800;margin-bottom:10px}
+.news-teaser p{opacity:.82;font-size:.94rem;margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto}
+.btn-news{display:inline-block;background:var(--teal);color:#fff;font-weight:700;padding:14px 30px;border-radius:10px;font-size:.95rem}
+
+/* EXPERT */
+.expert-section{background:linear-gradient(135deg,var(--purple),var(--purple-dark));padding:58px 24px;color:#fff;text-align:center}
+.expert-inner{max-width:640px;margin:0 auto}
+.expert-section h2{font-size:1.7rem;font-weight:800;margin-bottom:12px}
+.expert-section>div>p{opacity:.86;font-size:.94rem;margin-bottom:26px}
+.expert-points{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:26px}
+.ep{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:16px;text-align:left;font-size:.88rem}
+.ep strong{display:block;margin-bottom:4px;font-size:.93rem}
+.btn-expert{display:inline-block;background:#fff;color:var(--purple-dark);font-weight:800;padding:16px 36px;border-radius:12px;font-size:1rem;margin-bottom:12px}
+.expert-sub{font-size:.8rem;opacity:.72;max-width:460px;margin:0 auto}
+.expert-disclaimer{font-size:.74rem;opacity:.6;max-width:480px;margin:8px auto 0}
+
+/* FAQ */
+.faq-section{padding:56px 24px;background:var(--bg)}
+.faq-inner{max-width:720px;margin:0 auto}
+.faq{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;background:var(--card)}
+.faq-q{padding:16px 20px;font-weight:700;font-size:.95rem;color:var(--purple-dark);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q::after{content:'\FF0B';font-size:1.1rem;color:var(--muted);font-weight:400}
+.faq.open .faq-q::after{content:'\FF0D'}
+.faq-a{display:none;padding:0 20px 16px;font-size:.9rem;color:var(--muted)}
+.faq.open .faq-a{display:block}
+
+/* FOOTER CTA */
+.footer-cta{background:var(--teal);padding:48px 24px;text-align:center}
+.footer-cta h2{font-size:1.4rem;font-weight:800;margin-bottom:10px;color:#fff}
+.footer-cta p{color:rgba(255,255,255,.9);margin-bottom:24px;font-size:.95rem}
+.footer-cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* FOOTER */
+footer{background:var(--purple-dark);color:rgba(255,255,255,.6);padding:32px 24px;text-align:center;font-size:.82rem}
+footer a{color:rgba(255,255,255,.78);margin:0 8px}
+footer a:hover{color:#fff}
+.footer-links{margin-bottom:12px;display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.footer-disclaimer{max-width:660px;margin:12px auto 0;font-size:.76rem;opacity:.7;line-height:1.6}
+
+@media(max-width:600px){
+  .expert-points{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column;align-items:center}
+  .nav-links a:not(.nav-cta){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Site navigation">
+  <div class="nav-logo">Plan<span>Decoder</span></div>
+  <div class="nav-links">
+    <a href="news.html">NDIS News</a>
+    <a href="tool.html">Prep Tool</a>
+    <a href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" class="nav-cta" target="_blank" rel="noopener">Get Full Access</a>
+  </div>
+</nav>
+
+<div class="ticker" role="alert">
+  New Framework Planning started 1 July 2026. Every assessment now uses the new rules. Get prepared today.
+</div>
+
+<!-- HERO -->
+<section class="hero" aria-label="Hero">
+  <div class="hero-tag">Free Preparation Tool</div>
+  <h1>Walk into your assessment <span>fully prepared</span></h1>
+  <p>Describe your support needs across 12 areas of daily life. Use your own words. Build a clear summary you can share with your support coordinator. Free, private, and it runs entirely in your browser.</p>
+  <div class="hero-btns">
+    <a class="btn-hero-primary" href="tool.html">Try the free tool</a>
+    <a class="btn-hero-secondary" href="news.html">Latest NDIS news</a>
+  </div>
+  <div class="hero-trust">
+    <span>&#128274; 100% private. No account needed</span>
+    <span>&#9989; Nothing is sent to any server</span>
+    <span>&#128241; Works on mobile</span>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" aria-label="Features">
+  <div class="section-tag">What's included</div>
+  <h2>Everything you need to prepare</h2>
+  <div class="feature-grid">
+    <div class="ff"><div class="ff-icon">&#129513;</div><div><h4>12 areas of daily life</h4><p>Cover every part of daily life, one simple step at a time.</p></div></div>
+    <div class="ff"><div class="ff-icon">&#128221;</div><div><h4>Plain language statements</h4><p>Turns your answers into clear support need statements. Every line comes from what you entered.</p></div></div>
+    <div class="ff"><div class="ff-icon">&#128202;</div><div><h4>Support pattern summary</h4><p>A clean table of what you reported in each area. Easy to share with professionals.</p></div></div>
+    <div class="ff"><div class="ff-icon">&#9888;&#65039;</div><div><h4>Gaps check</h4><p>Shows you which areas you have not covered yet. Nothing falls through the cracks.</p></div></div>
+    <div class="ff"><div class="ff-icon">&#128640;</div><div><h4>Next steps plan</h4><p>What evidence to gather. Who to speak to. How to prepare.</p></div></div>
+    <div class="ff"><div class="ff-icon">&#9855;</div><div><h4>Accessible</h4><p>Large text. High contrast mode. Screen reader friendly. Works on any device.</p></div></div>
+  </div>
+  <div style="text-align:center;margin-top:32px">
+    <a class="btn-hero-primary" href="tool.html" style="background:var(--purple);color:#fff">Try the free tool</a>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" aria-label="Pricing">
+  <div class="pricing-inner">
+    <div class="section-tag">Simple pricing</div>
+    <h2>Start free. Upgrade when you're ready.</h2>
+    <p class="pricing-sub">The free preview covers your first 3 life areas. Full access unlocks all 12 areas and your complete summary.</p>
+    <table class="price-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th class="hl">Essential $47</th>
+          <th>Pro / Complete $97 to $127</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Plain language statements</td><td>First 3 areas</td><td class="hl">All 12 areas</td><td>All 12 areas + PDF</td></tr>
+        <tr><td>Informal Support Calculator</td><td>&mdash;</td><td class="hl">Included</td><td>Included</td></tr>
+        <tr><td>My Fluctuation Patterns</td><td>Basic</td><td class="hl">&mdash;</td><td>Full, per life area</td></tr>
+        <tr><td>Funding request builder</td><td>&mdash;</td><td class="hl">&mdash;</td><td>Included</td></tr>
+        <tr><td>Best for</td><td>Trying it out</td><td class="hl" style="color:var(--teal)">Most participants</td><td>Complex needs</td></tr>
+      </tbody>
+    </table>
+    <div class="price-cta">
+      <a class="btn-hero-primary" href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" target="_blank" rel="noopener" style="background:var(--purple);color:#fff">Get full access</a>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS TEASER -->
+<div class="news-teaser" aria-label="NDIS News">
+  <div class="section-tag">Latest NDIS news</div>
+  <h2>Stay up to date with policy changes</h2>
+  <p>Live NDIS updates in plain English. Funding changes and sector news, updated automatically.</p>
+  <a href="news.html" class="btn-news">Visit the news hub</a>
+</div>
+
+<!-- EXPERT CTA -->
+<section class="expert-section" id="expert" aria-label="Preparation support">
+  <div class="expert-inner">
+    <h2>Want experienced preparation support?</h2>
+    <p>The free tool is a great start. Nothing replaces working with someone who knows the NDIS well. A preparation consultant can review your summary, help you describe your needs clearly, and make sure you walk in ready.</p>
+    <div class="expert-points">
+      <div class="ep"><strong>&#129489;&#8205;&#128188; Summary review</strong><span style="font-size:.83rem;opacity:.85">We review your tool output and help strengthen every area that could be clearer.</span></div>
+      <div class="ep"><strong>&#128483;&#65039; Communication coaching</strong><span style="font-size:.83rem;opacity:.85">Learn how to describe your hardest days so the assessor understands your real needs.</span></div>
+      <div class="ep"><strong>&#128209; Evidence checklist</strong><span style="font-size:.83rem;opacity:.85">We tell you which reports to get, from whom, and what they need to cover.</span></div>
+      <div class="ep"><strong>&#128184; Budget impact review</strong><span style="font-size:.83rem;opacity:.85">Understand how changes may affect your plan and what to prioritise now.</span></div>
+    </div>
+    <a class="btn-expert" href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" target="_blank" rel="noopener">Book preparation support</a>
+    <p class="expert-sub">Payment is processed securely by Stripe. Plan Decoder does not store your card details. One-off session. No lock-in.</p>
+    <p class="expert-disclaimer">Preparation coaching and document review only. Not legal, medical, or registered disability advocacy advice. Plan Decoder is independent and not affiliated with the NDIA or Australian Government.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" aria-label="Frequently asked questions">
+  <div class="faq-inner">
+    <div class="section-tag">Common questions</div>
+    <h2 style="font-size:1.6rem;font-weight:800;margin-bottom:28px;color:var(--purple-dark)">Frequently asked questions</h2>
+
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFaq(this)">Who is this for?</div>
+      <div class="faq-a">Any NDIS participant with an upcoming plan review or assessment. Also carers, support coordinators, and plan managers. It is especially useful if your plan includes community participation or capacity building supports.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFaq(this)">Is the free version really free?</div>
+      <div class="faq-a">Yes. No sign-up. No credit card. No catch. The free preview covers your first 3 life areas and runs entirely in your browser. Full access unlocks all 12 areas and your complete summary.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFaq(this)">What if I have just had my plan renewed?</div>
+      <div class="faq-a">Policy changes can still affect you mid-plan. Using this tool helps you understand your current support needs. It also helps you prepare for any review that comes up.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFaq(this)">What does preparation support include?</div>
+      <div class="faq-a">An experienced preparation consultant reviews your summary. They point out gaps. They suggest clearer ways to describe your needs. They give you a personal action plan. This is a preparation and coaching service. It is not legal, medical, or registered disability advocacy advice.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFaq(this)">Is this an official NDIS or NDIA service?</div>
+      <div class="faq-a">No. Plan Decoder is fully independent. We are not affiliated with the NDIA or the Australian Government. Our tools help you understand and prepare for the official process. They do not replace it. All NDIS decisions are made by the NDIA.</div>
+    </div>
+    <div class="faq">
+      <div class="faq-q" onclick="toggleFaq(this)">Is my information private?</div>
+      <div class="faq-a">Yes. The prep tool stores everything on your device only. Nothing you enter is sent to any server. If you make a purchase, payment is handled securely by Stripe. Plan Decoder does not store your card details.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="footer-cta" aria-label="Call to action">
+  <h2>Don't leave your plan to chance.</h2>
+  <p>Start with the free tool. Then get experienced support to help you communicate your needs clearly.</p>
+  <div class="footer-cta-btns">
+    <a href="tool.html" style="background:#fff;color:var(--purple-dark);font-weight:800;padding:14px 30px;border-radius:10px;font-size:.98rem">Use the free tool</a>
+    <a href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" target="_blank" rel="noopener" style="background:var(--purple-dark);color:#fff;font-weight:800;padding:14px 30px;border-radius:10px;font-size:.98rem">Book preparation support</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="tool.html">Prep Tool</a>
+    <a href="news.html">NDIS News</a>
+    <a href="privacy.html">Privacy &amp; Terms</a>
+  </div>
+  <div>&copy; 2026 Plan Decoder &middot; Independent preparation service</div>
+  <div class="footer-disclaimer">Plan Decoder is an independent preparation and coaching service. It is not affiliated with the NDIA, the NDIS Quality and Safeguards Commission, or the Australian Government. Information on this site is general in nature. It is not legal, medical, or registered disability advocacy advice. Always talk to a qualified professional about your own situation. Last reviewed: 3 July 2026.</div>
+</footer>
+
+<script>
+function toggleFaq(el){
+  var faq=el.parentElement;
+  var isOpen=faq.classList.contains('open');
+  document.querySelectorAll('.faq.open').forEach(function(f){f.classList.remove('open');});
+  if(!isOpen)faq.classList.add('open');
+}
+</script>
+</body>
+</html>

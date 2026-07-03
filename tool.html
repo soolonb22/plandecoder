@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Support Needs Prep Tool | Plan Decoder</title>
+<meta name="description" content="Free NDIS assessment preparation tool. Describe your support needs across 12 areas of daily life. Generate a plain language summary to share with your support coordinator or allied health professional.">
+<style>
+:root{
+  --purple:#5B2D7E;--purple-dark:#3E1F57;--purple-soft:#F3EDF8;
+  --teal:#0E7C86;--teal-soft:#E6F4F5;
+  --amber:#B45309;--amber-soft:#FEF3C7;
+  --green:#15803D;--green-soft:#F0FDF4;
+  --bg:#FAF9FC;--card:#FFFFFF;--border:#E5E1EC;
+  --text:#26243B;--muted:#5B5870;--radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:100%}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:1.05rem;line-height:1.65}
+button,input,textarea,select{font:inherit}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--purple);color:#fff;padding:10px 18px;z-index:2000;border-radius:0 0 8px 0}
+.skip-link:focus{left:0}
+
+/* NAV */
+.nav{background:var(--purple-dark);padding:0 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:58px}
+.nav-logo{color:#fff;font-weight:800;font-size:1.05rem;letter-spacing:-.3px;text-decoration:none}
+.nav-logo span{color:#7FD8DF}
+.nav-right{display:flex;align-items:center;gap:10px}
+.free-pill{background:rgba(255,255,255,.15);color:#fff;font-size:.8rem;font-weight:700;padding:5px 12px;border-radius:20px}
+.nav-cta{background:#fff;color:var(--purple-dark);font-weight:800;padding:9px 18px;border-radius:10px;font-size:.88rem;text-decoration:none;border:none;cursor:pointer}
+.progress-track{height:6px;background:#D9D2E5}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));transition:width .4s ease}
+.step-label{background:var(--purple-dark);color:rgba(255,255,255,.85);font-size:.85rem;padding:7px 20px;text-align:center}
+
+/* LAYOUT */
+.wrap{max-width:760px;margin:0 auto;padding:24px 18px 90px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 24px;margin-bottom:18px}
+.card-title{font-size:1.3rem;font-weight:800;color:var(--purple-dark);margin-bottom:6px}
+.card-sub{font-size:.95rem;color:var(--muted);margin-bottom:18px}
+
+/* INTRO */
+.intro-hero{background:linear-gradient(135deg,var(--purple-dark),var(--purple));border-radius:var(--radius);padding:34px 26px;color:#fff;margin-bottom:18px;text-align:center}
+.intro-hero h1{font-size:1.65rem;font-weight:800;line-height:1.25;margin-bottom:12px}
+.intro-hero p{font-size:1rem;opacity:.95;max-width:540px;margin:0 auto 18px}
+.intro-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;max-width:560px;margin:0 auto}
+.intro-feat{background:rgba(255,255,255,.12);border-radius:10px;padding:11px 14px;font-size:.9rem}
+@media(max-width:560px){.intro-features{grid-template-columns:1fr}}
+
+/* INFO BOXES */
+.privacy-card{background:var(--teal-soft);border:1px solid #C4E5E8;border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start}
+.privacy-card .icon{font-size:1.2rem;flex-shrink:0}
+.privacy-card p{font-size:.92rem;color:#0B5259}
+.alert{background:var(--amber-soft);border:1px solid #F5DFA6;border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;font-size:.92rem;color:#7A4508}
+.alert-icon{flex-shrink:0}
+
+/* FIELDS */
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:700;font-size:.95rem;margin-bottom:7px;color:var(--purple-dark)}
+.field input,.field textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:13px 15px;font-size:1rem;background:#fff;color:var(--text)}
+.field input:focus,.field textarea:focus{border-color:var(--teal);outline:none}
+.field textarea{min-height:96px;resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.field-row{grid-template-columns:1fr}}
+.optional-tag{font-weight:400;color:var(--muted);font-size:.85rem}
+
+/* DOMAIN */
+.domain-badge{display:inline-block;background:var(--purple-soft);color:var(--purple);font-size:.78rem;font-weight:800;padding:5px 13px;border-radius:20px;margin-bottom:14px;letter-spacing:.3px}
+.domain-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.domain-icon{font-size:1.9rem;line-height:1}
+.domain-header h2{font-size:1.25rem;font-weight:800;color:var(--purple-dark);line-height:1.3}
+.domain-header p{font-size:.92rem;color:var(--muted);margin-top:3px}
+.score-group{margin-bottom:20px}
+.score-label{font-weight:700;font-size:.98rem;margin-bottom:10px;color:var(--purple-dark)}
+.score-label .help{font-weight:400;color:var(--muted);font-size:.85rem}
+.score-options{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+@media(max-width:560px){.score-options{grid-template-columns:repeat(2,1fr)}}
+.score-opt{border:2px solid var(--border);border-radius:10px;padding:11px 10px;cursor:pointer;text-align:center;background:#fff;transition:border-color .15s}
+.score-opt:hover{border-color:var(--teal)}
+.score-opt.selected{border-color:var(--teal);background:var(--teal-soft);font-weight:700}
+.score-opt.selected.high{border-color:var(--purple);background:var(--purple-soft)}
+.opt-label{font-weight:700;font-size:.9rem}
+.opt-desc{font-size:.76rem;color:var(--muted);margin-top:3px}
+
+/* DOT NAV */
+.dot-nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;justify-content:center}
+.dot{width:34px;height:34px;border-radius:50%;background:#E9E4F1;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;cursor:pointer;position:relative;border:2px solid transparent}
+.dot.done{background:var(--teal-soft);color:var(--teal)}
+.dot.active{border-color:var(--purple);background:var(--purple);color:#fff}
+.dot.locked{background:#F1EFF5;color:#B9B3C6;cursor:not-allowed}
+.dot .dot-tooltip{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--purple-dark);color:#fff;font-size:.74rem;padding:5px 9px;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:10}
+.dot:hover .dot-tooltip,.dot:focus .dot-tooltip{opacity:1}
+
+/* BUTTONS */
+.nav-btns{display:flex;justify-content:space-between;gap:12px;margin-top:4px}
+.btn-back{background:#fff;border:2px solid var(--border);color:var(--muted);font-weight:700;padding:13px 22px;border-radius:10px;cursor:pointer}
+.btn-next{background:var(--purple);border:none;color:#fff;font-weight:800;padding:13px 26px;border-radius:10px;cursor:pointer;font-size:.98rem}
+.btn-next:hover{background:var(--purple-dark)}
+.btn-next.teal{background:var(--teal)}
+.btn-next.green{background:var(--green)}
+
+/* UPGRADE */
+.upgrade-card{background:linear-gradient(135deg,var(--purple-dark),var(--purple));border-radius:var(--radius);padding:30px 26px;color:#fff;text-align:center;margin-bottom:18px}
+.upgrade-card h3{font-size:1.3rem;font-weight:800;margin-bottom:10px}
+.upgrade-card p{font-size:.95rem;opacity:.92;max-width:480px;margin:0 auto 18px}
+.upgrade-btn{display:inline-block;background:#fff;color:var(--purple-dark);font-weight:800;font-size:1rem;padding:15px 32px;border-radius:12px;text-decoration:none;margin-bottom:14px}
+.code-row{display:flex;gap:8px;max-width:360px;margin:0 auto}
+.code-input{flex:1;border:none;border-radius:10px;padding:12px 14px;font-size:.95rem}
+.code-btn{background:var(--teal);color:#fff;font-weight:700;padding:12px 18px;border-radius:10px;border:none;cursor:pointer;white-space:nowrap}
+.code-error{color:#FECACA;font-size:.85rem;margin-top:8px;display:none}
+.upgrade-sub{font-size:.78rem;opacity:.75;margin-top:10px}
+
+/* REPORT */
+.report-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.btn-print{background:var(--purple-dark);color:#fff;font-weight:700;padding:13px 22px;border-radius:10px;border:none;cursor:pointer}
+.btn-edit,.btn-restart{background:#fff;border:2px solid var(--border);color:var(--muted);font-weight:700;padding:13px 20px;border-radius:10px;cursor:pointer}
+.report-header{background:var(--purple-dark);color:#fff;padding:32px 26px;border-radius:var(--radius);margin-bottom:18px}
+.report-header h1{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+.report-header p{opacity:.85;font-size:.92rem}
+.report-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.report-meta-item{background:rgba(255,255,255,.12);border-radius:10px;padding:14px;text-align:center}
+.report-meta-item .val{font-size:1.5rem;font-weight:800}
+.report-meta-item .lbl{font-size:.78rem;opacity:.85;margin-top:2px}
+.report-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.report-section h2{font-size:1.1rem;font-weight:800;color:var(--purple-dark);margin-bottom:14px}
+.domain-row{display:grid;grid-template-columns:1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid #F1EEF6;align-items:start}
+.domain-row:last-child{border-bottom:none}
+.domain-row-title{font-weight:800;font-size:.95rem;color:var(--purple-dark);margin-bottom:4px}
+.domain-row-text{font-size:.92rem;color:var(--text)}
+.badge{display:inline-block;font-size:.72rem;font-weight:800;padding:4px 11px;border-radius:20px;white-space:nowrap}
+.badge-freq{background:var(--purple-soft);color:var(--purple)}
+.badge-lvl{background:var(--teal-soft);color:var(--teal);margin-top:5px}
+.sn-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.sn-table th{background:var(--purple-soft);padding:11px 12px;text-align:left;font-weight:800;color:var(--purple-dark);border-bottom:2px solid var(--border)}
+.sn-table td{padding:11px 12px;border-bottom:1px solid #F1EEF6;vertical-align:top}
+.disclaimer-box{background:var(--amber-soft);border:1px solid #F5DFA6;border-radius:10px;padding:16px 18px;font-size:.88rem;color:#7A4508;margin-top:16px;line-height:1.6}
+.disclaimer-box strong{color:#92400E}
+
+/* FOOTER */
+.site-footer{background:var(--purple-dark);color:rgba(255,255,255,.85);padding:28px 20px;text-align:center;font-size:.85rem;line-height:1.7;margin-top:40px}
+.site-footer a{color:#7FD8DF}
+.site-footer .foot-strong{color:#fff;font-weight:700}
+
+/* HC + PRINT */
+.hc-toggle{position:fixed;bottom:16px;left:16px;background:var(--purple-dark);color:#fff;border:2px solid rgba(255,255,255,.35);padding:9px 15px;border-radius:10px;font-size:.82rem;font-weight:700;z-index:500;cursor:pointer}
+.high-contrast{--bg:#000;--card:#111;--border:#555;--text:#fff;--muted:#ccc;--purple:#B98FE0;--purple-dark:#000;--purple-soft:#222;--teal:#6FDCE5;--teal-soft:#0A2A2D;--amber-soft:#332400;--green-soft:#00220E}
+@media print{.nav,.progress-track,.step-label,.report-actions,.hc-toggle,.dot-nav,.nav-btns,.upgrade-card{display:none!important}body{background:#fff}.report-section,.report-header{border:1px solid #ccc;break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#app">Skip to main content</a>
+
+<nav class="nav" aria-label="Main navigation">
+  <a class="nav-logo" href="index.html">Plan<span>Decoder</span></a>
+  <div class="nav-right" id="navRight"></div>
+</nav>
+<div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<div class="step-label" id="stepLabel">Getting started</div>
+
+<main class="wrap">
+  <div id="app" role="main"></div>
+  <div id="reportOut" style="display:none"></div>
+</main>
+
+<button class="hc-toggle" onclick="toggleHC()" aria-label="Toggle high contrast mode">High Contrast</button>
+
+<footer class="site-footer">
+  <p><span class="foot-strong">Plan Decoder is an independent resource.</span> It is not affiliated with, endorsed by, or part of the NDIA, the NDIS Quality and Safeguards Commission, or the Australian Government.</p>
+  <p>This tool helps you prepare and organise your own information. It is general information only. It is not legal, medical, financial or registered advocacy advice. All NDIS decisions are made by the NDIA.</p>
+  <p>Last reviewed: 3 July 2026 &middot; Version 4.0 &middot; <a href="privacy.html">Privacy &amp; Terms</a></p>
+</footer>
+
+<script>
+// ACCESS STATE (keys unchanged so existing customers stay unlocked)
+var ACCESS_KEY='KYLIE2026';
+var LS_ACCESS='pd_ndis_access';
+var FREE_LIMIT=3;
+function isUnlocked(){try{return localStorage.getItem(LS_ACCESS)==='1';}catch(e){return false;}}
+(function(){
+  try{
+    var params=new URLSearchParams(window.location.search);
+    if(params.get('k')===ACCESS_KEY){
+      localStorage.setItem(LS_ACCESS,'1');
+      history.replaceState({},'',window.location.pathname);
+    }
+  }catch(e){}
+})();
+function checkManualCode(){
+  var val=(v('codeInput')||'').trim().toUpperCase();
+  if(val===ACCESS_KEY){
+    try{localStorage.setItem(LS_ACCESS,'1');}catch(e){}
+    render();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }else{
+    var err=document.getElementById('codeError');
+    if(err)err.style.display='block';
+    var inp=document.getElementById('codeInput');
+    if(inp)inp.focus();
+  }
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&document.activeElement&&document.activeElement.id==='codeInput'){checkManualCode();}
+});
+
+function toggleHC(){document.body.classList.toggle('high-contrast');}
+
+// STATE (key unchanged so saved answers survive the upgrade)
+var LS_STATE='ndis_prep_v3';
+var state={step:0,info:{},domains:[]};
+
+var DOMAINS=[
+  {title:'Self-Care',icon:'\uD83E\uDDF4',desc:'Bathing, dressing, grooming, eating, toileting and personal hygiene.',examples:'Getting dressed, showering, managing medications, preparing meals for yourself.'},
+  {title:'Communication',icon:'\uD83D\uDDE3\uFE0F',desc:'Expressing yourself and understanding others. This includes speech, writing and devices.',examples:'Making phone calls, understanding instructions, using apps or assistive technology.'},
+  {title:'Mobility & Movement',icon:'\uD83E\uDDBD',desc:'Moving around your home and community. Using transport.',examples:'Walking, using a wheelchair, getting in and out of bed, catching public transport.'},
+  {title:'Interpersonal Relationships',icon:'\uD83E\uDD1D',desc:'Making and keeping friendships, family relationships and social connections.',examples:'Spending time with friends, managing conflict, joining community groups.'},
+  {title:'Learning & Education',icon:'\uD83D\uDCDA',desc:'Attending school or training. Understanding and using new knowledge.',examples:'Completing assignments, following multi-step instructions, attending TAFE or university.'},
+  {title:'Domestic & Home Life',icon:'\uD83C\uDFE0',desc:'Cooking, cleaning, shopping and managing your household.',examples:'Preparing meals, doing laundry, paying bills, keeping your living space liveable.'},
+  {title:'Community & Social Participation',icon:'\uD83C\uDF10',desc:'Attending events, using community services and taking part in community life.',examples:'Going to appointments, attending cultural events, voting, volunteering.'},
+  {title:'Employment & Work',icon:'\uD83D\uDCBC',desc:'Finding and keeping work. Completing tasks and working with colleagues.',examples:'Job searching, attending work, meeting deadlines, managing workplace relationships.'},
+  {title:'Health Management',icon:'\uD83C\uDFE5',desc:'Managing health conditions. Attending appointments and following medical advice.',examples:'Taking medication correctly, attending GP or specialist visits, managing chronic conditions.'},
+  {title:'Leisure & Recreation',icon:'\uD83C\uDFAF',desc:'Hobbies, sport, cultural activities and time for enjoyment.',examples:'Playing sport, attending concerts, pursuing hobbies, relaxing activities.'},
+  {title:'Emotional Regulation & Behaviour',icon:'\uD83E\uDDE0',desc:'Managing emotions, stress and behaviour in daily life.',examples:'Coping with anxiety, managing meltdowns, handling frustration or change.'},
+  {title:'Decision-Making & Safety',icon:'\uD83D\uDEE1\uFE0F',desc:'Making safe decisions. Understanding risks and staying safe in the community.',examples:'Managing money, crossing the road safely, knowing who to trust.'}
+];
+
+var FREQ_OPTIONS=[
+  {label:'Never',desc:'Does not occur',score:0},
+  {label:'Rarely',desc:'Less than once a week',score:1},
+  {label:'Sometimes',desc:'1 to 2 days per week',score:2},
+  {label:'Often',desc:'3 to 4 days per week',score:3},
+  {label:'Very Often',desc:'5 to 6 days per week',score:4},
+  {label:'Always',desc:'Daily or multiple times',score:5}
+];
+var LEVEL_OPTIONS=[
+  {label:'No support',desc:'Manage independently',score:0},
+  {label:'Supervision',desc:'Prompting only',score:1},
+  {label:'Partial',desc:'Help with part of task',score:2},
+  {label:'Extensive',desc:'Help with most of task',score:3},
+  {label:'Full',desc:'Complete help required',score:4},
+  {label:'Specialised',desc:'Specific expertise or equipment',score:5}
+];
+
+// FUNCTIONAL LANGUAGE. First person. Every line traces to the person's own selections.
+function buildStatement(domainIdx,freq,level,notes){
+  var d=DOMAINS[domainIdx];
+  var f=FREQ_OPTIONS[freq];
+  var l=LEVEL_OPTIONS[level];
+  if(freq===0&&level===0){
+    return d.title+': I did not report any current support needs in this area.';
+  }
+  var levelTxt='';
+  if(level===0)levelTxt='no direct help';
+  else if(level===1)levelTxt='prompting and supervision';
+  else if(level===2)levelTxt='help with part of the task';
+  else if(level===3)levelTxt='help with most of the task';
+  else if(level===4)levelTxt='complete help';
+  else levelTxt='specialised support with specific equipment or trained people';
+  var freqTxt=f.label.toLowerCase()+' ('+f.desc.toLowerCase()+')';
+  var sentence=d.title+': I need '+levelTxt+' '+freqTxt+' with '+d.title.toLowerCase()+' tasks.';
+  if(notes&&notes.trim()){sentence+=' In my own words: '+notes.trim();}
+  return sentence;
+}
+
+// Traceable restatement of what the person selected. No funding language.
+function reportedSummary(total){
+  if(total>=8)return 'You reported frequent and substantial support needs';
+  if(total>=5)return 'You reported regular support needs';
+  if(total>=1)return 'You reported some support needs';
+  return 'You reported no current support needs';
+}
+
+function trySave(){try{localStorage.setItem(LS_STATE,JSON.stringify(state));}catch(e){}}
+function tryLoad(){try{var d=localStorage.getItem(LS_STATE);if(d)state=JSON.parse(d);}catch(e){}}
+
+function domainCap(){return isUnlocked()?12:FREE_LIMIT;}
+
+function updateProgress(){
+  var lastStep=isUnlocked()?14:FREE_LIMIT+2;
+  var pct=Math.round((Math.min(state.step,lastStep)/lastStep)*100);
+  var fill=document.getElementById('progressFill');
+  var lbl=document.getElementById('stepLabel');
+  if(fill)fill.style.width=pct+'%';
+  if(lbl){
+    if(state.step===0)lbl.innerHTML='Getting started';
+    else if(state.step===1)lbl.innerHTML='<strong>Step 1:</strong> Your information';
+    else if(state.step>=2&&state.step<=13)lbl.innerHTML='<strong>Area '+(state.step-1)+' of 12:</strong> '+DOMAINS[state.step-2].title;
+    else lbl.innerHTML='<strong>Final step:</strong> Your summary';
+  }
+  var nr=document.getElementById('navRight');
+  if(nr){
+    if(isUnlocked()){
+      nr.innerHTML='<span class="free-pill">Full access</span>';
+    }else{
+      nr.innerHTML='<span class="free-pill">Free preview: 3 of 12 areas</span><button class="nav-cta" onclick="goToUpgrade()">Unlock all 12</button>';
+    }
+  }
+}
+
+function goTo(s){
+  state.step=s;
+  trySave();
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function next(){goTo(state.step+1);}
+function back(){goTo(state.step-1);}
+function goToUpgrade(){
+  state.step=2+FREE_LIMIT;
+  trySave();
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderDotNav(current){
+  var cap=domainCap();
+  return '<div class="dot-nav" role="navigation" aria-label="Life area navigation">'+
+    DOMAINS.map(function(d,i){
+      var idx=i+2;
+      var nd=state.domains[i]||{};
+      var done=nd.freq!==undefined&&nd.level!==undefined;
+      var active=idx===current;
+      var locked=i>=cap;
+      var cls='dot'+(done?' done':'')+(active?' active':'')+(locked?' locked':'');
+      var action=locked?'goToUpgrade()':'goTo('+idx+')';
+      var lbl=d.title+(done?' (completed)':'')+(locked?' (locked in free preview)':'');
+      var inner=locked?'\uD83D\uDD12':(done&&!active?'\u2713':(i+1));
+      return '<div class="'+cls+'" onclick="'+action+'" tabindex="0" role="button" aria-label="'+lbl+'" onkeypress="if(event.key===\'Enter\')'+action+'"><div class="dot-tooltip">'+d.title+'</div>'+inner+'</div>';
+    }).join('')+'</div>';
+}
+
+function renderIntro(){
+  var unlocked=isUnlocked();
+  var modeLine=unlocked?
+    '':
+    '<div class="privacy-card"><span class="icon">\uD83C\uDF81</span><p><strong>Free preview.</strong> You can complete the first 3 life areas and see your summary at no cost. Unlock all 12 areas any time.</p></div>';
+  return '<div class="intro-hero" role="banner">'+
+    '<h1>Prepare for your support needs assessment</h1>'+
+    '<p>Describe your support needs across 12 areas of daily life. Use your own words. Get a clear summary you can review with a professional before your assessment.</p>'+
+    '<div class="intro-features">'+
+      '<div class="intro-feat">\u2705 12 areas of daily life, one step at a time</div>'+
+      '<div class="intro-feat">\u2705 Turns your answers into plain statements</div>'+
+      '<div class="intro-feat">\u2705 Saves progress automatically in your browser</div>'+
+      '<div class="intro-feat">\u2705 Print or copy your summary. Nothing is sent online</div>'+
+    '</div>'+
+  '</div>'+
+  modeLine+
+  '<div class="privacy-card" role="region" aria-label="Privacy information">'+
+    '<span class="icon">\uD83D\uDD12</span>'+
+    '<p><strong>100% private.</strong> Everything you enter stays on your device. No account is needed. Nothing is sent to any server. Your answers are saved in your browser and clear if you clear your browser data.</p>'+
+  '</div>'+
+  '<div class="alert">'+
+    '<span class="alert-icon">\u26A0\uFE0F</span>'+
+    '<span><strong>Before you start:</strong> This tool helps you prepare and organise your own information. It does not assess you. It does not predict funding. Review your summary with a support coordinator, OT or allied health professional before any formal assessment. Plan Decoder is independent. It is not affiliated with the NDIA or the Australian Government.</span>'+
+  '</div>'+
+  '<div class="card">'+
+    '<div class="card-title">How it works</div>'+
+    '<div class="card-sub">Three simple stages. You can go back and edit any step at any time. You can stop and return later. Your answers are saved.</div>'+
+    '<ol style="padding-left:22px;display:grid;gap:9px;font-size:.95rem">'+
+      '<li><strong>Your information.</strong> Name and assessment details. Every field is optional.</li>'+
+      '<li><strong>12 areas of daily life.</strong> Choose how often you need support and how much. Add notes in your own words.</li>'+
+      '<li><strong>Your summary.</strong> Plain statements built only from what you entered.</li>'+
+    '</ol>'+
+  '</div>'+
+  '<div style="text-align:center;margin-top:8px">'+
+    '<button class="btn-next green" onclick="next()" style="font-size:1.05rem;padding:16px 42px" aria-label="Start preparing">Start</button>'+
+  '</div>';
+}
+
+function renderInfo(){
+  var inf=state.info||{};
+  return '<div class="card">'+
+    '<div class="card-title">Your information</div>'+
+    '<div class="card-sub">This appears at the top of your summary. Every field is optional. Share only what you are comfortable sharing.</div>'+
+    '<div class="field-row">'+
+      '<div class="field"><label for="f-name">Your name <span class="optional-tag">(optional)</span></label><input id="f-name" type="text" value="'+esc(inf.name||'')+'" placeholder="Full name"></div>'+
+      '<div class="field"><label for="f-dob">Date of birth <span class="optional-tag">(optional)</span></label><input id="f-dob" type="date" value="'+esc(inf.dob||'')+'"></div>'+
+    '</div>'+
+    '<div class="field-row">'+
+      '<div class="field"><label for="f-date">Assessment date <span class="optional-tag">(optional)</span></label><input id="f-date" type="date" value="'+esc(inf.assessDate||'')+'"></div>'+
+      '<div class="field"><label for="f-ndis">NDIS number <span class="optional-tag">(optional)</span></label><input id="f-ndis" type="text" value="'+esc(inf.ndisNum||'')+'" placeholder="43XXXXXXX"></div>'+
+    '</div>'+
+    '<div class="field"><label for="f-diag">Primary diagnosis or disability <span class="optional-tag">(optional)</span></label><input id="f-diag" type="text" value="'+esc(inf.diag||'')+'" placeholder="e.g. Autism Spectrum Disorder, Cerebral Palsy"></div>'+
+    '<div class="field"><label for="f-coord">Support coordinator name <span class="optional-tag">(optional)</span></label><input id="f-coord" type="text" value="'+esc(inf.coord||'')+'" placeholder="If you have one"></div>'+
+    '<div class="field"><label for="f-goals">Your main goals for this plan <span class="optional-tag">(optional)</span></label><textarea id="f-goals" placeholder="What do you most want your plan to help you achieve?">'+esc(inf.goals||'')+'</textarea></div>'+
+  '</div>'+
+  '<div class="nav-btns">'+
+    '<button class="btn-back" onclick="back()">Back</button>'+
+    '<button class="btn-next" onclick="saveInfo()">Next: Area 1</button>'+
+  '</div>';
+}
+function saveInfo(){
+  state.info={name:v('f-name'),dob:v('f-dob'),assessDate:v('f-date'),ndisNum:v('f-ndis'),diag:v('f-diag'),coord:v('f-coord'),goals:v('f-goals')};
+  next();
+}
+
+function renderUpgrade(){
+  return renderDotNav(-1)+
+  '<div class="upgrade-card">'+
+    '<h3>Unlock all 12 life areas</h3>'+
+    '<p>You have finished the free preview. The full version covers all 12 areas of daily life. It builds your complete summary. Your answers so far are saved and will carry over.</p>'+
+    '<a class="upgrade-btn" href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" target="_blank" rel="noopener">Get full access</a>'+
+    '<div style="font-size:.85rem;opacity:.8;margin-bottom:14px">or enter your access code</div>'+
+    '<div class="code-row">'+
+      '<input type="text" class="code-input" id="codeInput" placeholder="Enter access code" autocomplete="off" aria-label="Access code">'+
+      '<button class="code-btn" onclick="checkManualCode()">Unlock</button>'+
+    '</div>'+
+    '<div class="code-error" id="codeError">That code is not correct. Please check and try again.</div>'+
+    '<div class="upgrade-sub">Payment is processed securely by Stripe. Plan Decoder does not store your card details.</div>'+
+  '</div>'+
+  '<div class="card" style="text-align:center">'+
+    '<p style="font-size:.95rem;color:var(--muted);margin-bottom:14px">Not ready yet? You can still view your free summary from the 3 areas you completed.</p>'+
+    '<button class="btn-next teal" onclick="goTo(14)">View my free summary</button>'+
+  '</div>'+
+  '<div class="nav-btns"><button class="btn-back" onclick="goTo('+(1+FREE_LIMIT)+')">Back</button><span></span></div>';
+}
+
+function renderDomain(idx){
+  var cap=domainCap();
+  if(idx>=cap){return renderUpgrade();}
+  var d=DOMAINS[idx];
+  var nd=state.domains[idx]||{};
+  var freq=nd.freq!==undefined?nd.freq:-1;
+  var level=nd.level!==undefined?nd.level:-1;
+
+  var freqOpts=FREQ_OPTIONS.map(function(o,i){
+    var sel=freq===i;
+    var cls='score-opt'+(sel?' selected'+(i>=4?' high':''):'');
+    return '<div class="'+cls+'" onclick="setFreq('+idx+','+i+')" tabindex="0" role="radio" aria-checked="'+(sel?'true':'false')+'" onkeypress="if(event.key===\'Enter\'||event.key===\' \')setFreq('+idx+','+i+')">'+
+      '<div class="opt-label">'+o.label+'</div><div class="opt-desc">'+o.desc+'</div></div>';
+  }).join('');
+  var levelOpts=LEVEL_OPTIONS.map(function(o,i){
+    var sel=level===i;
+    var cls='score-opt'+(sel?' selected'+(i>=4?' high':''):'');
+    return '<div class="'+cls+'" onclick="setLevel('+idx+','+i+')" tabindex="0" role="radio" aria-checked="'+(sel?'true':'false')+'" onkeypress="if(event.key===\'Enter\'||event.key===\' \')setLevel('+idx+','+i+')">'+
+      '<div class="opt-label">'+o.label+'</div><div class="opt-desc">'+o.desc+'</div></div>';
+  }).join('');
+
+  var isLastFree=!isUnlocked()&&idx===FREE_LIMIT-1;
+  var isLast=idx===11;
+  var nextLabel=isLast?'Build my summary':(isLastFree?'Continue':'Next area');
+  var sensitiveNote=(d.title==='Emotional Regulation & Behaviour')?
+    '<div class="alert"><span class="alert-icon">\uD83D\uDC9C</span><span>This area can bring up hard memories. Share only what feels okay. You can skip this area completely and come back later, or never. That is fine.</span></div>':'';
+
+  return renderDotNav(idx+2)+
+  '<div class="card">'+
+    '<div class="domain-badge">Area '+(idx+1)+' of 12</div>'+
+    '<div class="domain-header">'+
+      '<div class="domain-icon">'+d.icon+'</div>'+
+      '<div><h2>'+d.title+'</h2><p>'+d.desc+'</p></div>'+
+    '</div>'+
+    sensitiveNote+
+    '<div class="privacy-card" style="margin-bottom:16px"><span class="icon">\uD83D\uDCA1</span><p><strong>Examples:</strong> '+d.examples+'</p></div>'+
+    '<div class="score-group">'+
+      '<div class="score-label">How often do you need support in this area? <span class="help">(select one, or skip)</span></div>'+
+      '<div class="score-options" role="radiogroup" aria-label="Frequency">'+freqOpts+'</div>'+
+    '</div>'+
+    '<div class="score-group">'+
+      '<div class="score-label">How much support do you need? <span class="help">(select one, or skip)</span></div>'+
+      '<div class="score-options" role="radiogroup" aria-label="Level">'+levelOpts+'</div>'+
+    '</div>'+
+    '<div class="field" style="margin-top:4px">'+
+      '<label for="notes-'+idx+'">Describe your situation in your own words <span class="optional-tag">(optional but powerful)</span></label>'+
+      '<textarea class="textarea-field" id="notes-'+idx+'" placeholder="e.g. I can shower independently but need reminders to start and help with hair washing on difficult days.">'+esc(nd.notes||'')+'</textarea>'+
+    '</div>'+
+  '</div>'+
+  '<div class="nav-btns">'+
+    '<button class="btn-back" onclick="back()">Back</button>'+
+    '<button class="btn-next '+(isLast?'teal':'')+'" onclick="saveDomain('+idx+')">'+nextLabel+'</button>'+
+  '</div>';
+}
+function setFreq(idx,val){if(!state.domains[idx])state.domains[idx]={};state.domains[idx].freq=val;trySave();render();}
+function setLevel(idx,val){if(!state.domains[idx])state.domains[idx]={};state.domains[idx].level=val;trySave();render();}
+function saveDomain(idx){
+  if(!state.domains[idx])state.domains[idx]={};
+  state.domains[idx].notes=v('notes-'+idx);
+  trySave();
+  if(!isUnlocked()&&idx===FREE_LIMIT-1){goTo(2+FREE_LIMIT);}
+  else next();
+}
+
+var TOP_DISCLAIMER='<div class="disclaimer-box" style="margin-top:0;margin-bottom:16px">\u26A0\uFE0F <strong>Please read first:</strong> This summary was built only from your own answers. It is a preparation document. It is not an assessment, a diagnosis, or a funding decision. Review it with a support coordinator, OT or allied health professional before using it formally. All NDIS decisions are made by the NDIA.</div>';
+
+function renderReport(){
+  document.getElementById('app').style.display='none';
+  var ro=document.getElementById('reportOut');
+  ro.style.display='block';
+
+  var unlocked=isUnlocked();
+  var cap=domainCap();
+  var inf=state.info||{};
+  var today=new Date().toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'});
+
+  var items=[];
+  state.domains.forEach(function(nd,i){
+    if(!nd)return;
+    if(i>=cap)return;
+    if(nd.freq===undefined&&nd.level===undefined)return;
+    var f=nd.freq||0;var l=nd.level||0;
+    items.push({idx:i,domain:DOMAINS[i],freq:f,level:l,total:f+l,notes:nd.notes||''});
+  });
+  items.sort(function(a,b){return b.total-a.total;});
+  var substantial=items.filter(function(x){return x.total>=8;}).length;
+  var regular=items.filter(function(x){return x.total>=5&&x.total<8;}).length;
+
+  var metaHTML='<div class="report-meta">'+
+    '<div class="report-meta-item"><div class="val">'+substantial+'</div><div class="lbl">Areas with frequent, substantial needs reported</div></div>'+
+    '<div class="report-meta-item"><div class="val">'+regular+'</div><div class="lbl">Areas with regular needs reported</div></div>'+
+    '<div class="report-meta-item"><div class="val">'+items.length+'</div><div class="lbl">Areas completed</div></div>'+
+  '</div>';
+
+  function rowHTML(item){
+    var fLabel=FREQ_OPTIONS[item.freq]?FREQ_OPTIONS[item.freq].label:'Not answered';
+    var lLabel=LEVEL_OPTIONS[item.level]?LEVEL_OPTIONS[item.level].label:'Not answered';
+    return '<div class="domain-row">'+
+      '<div><div class="domain-row-title">'+item.domain.icon+' '+item.domain.title+'</div>'+
+      '<div class="domain-row-text">'+esc2(buildStatement(item.idx,item.freq,item.level,item.notes))+'</div></div>'+
+      '<div style="text-align:right"><span class="badge badge-freq">'+fLabel+'</span><br><span class="badge badge-lvl">'+lLabel+'</span></div>'+
+    '</div>';
+  }
+
+  var sec1='<div class="report-section"><h2>\uD83D\uDCCB Summary details</h2>'+
+    '<p style="font-size:.92rem;color:var(--muted);margin-bottom:12px">Prepared by: <strong>'+esc(inf.name||'Participant')+'</strong> &nbsp;|&nbsp; Date: <strong>'+today+'</strong>'+(inf.assessDate?' &nbsp;|&nbsp; Assessment: <strong>'+esc(inf.assessDate)+'</strong>':'')+'</p>'+
+    (inf.diag?'<p style="font-size:.92rem;margin-bottom:8px"><strong>Diagnosis:</strong> '+esc(inf.diag)+'</p>':'')+
+    (inf.goals?'<p style="font-size:.92rem;margin-bottom:8px"><strong>My goals:</strong> '+esc(inf.goals)+'</p>':'')+
+    '<p style="font-size:.9rem;color:var(--muted)">This document was prepared using the Plan Decoder preparation tool. Every statement below comes from the person\'s own answers. It is not an official NDIS document.</p>'+
+  '</div>';
+
+  var sec2='<div class="report-section"><h2>\uD83E\uDDE9 My support needs, in my own words</h2>'+
+    (items.length?items.map(rowHTML).join(''):'<p style="color:var(--muted)">No areas were completed yet. Go back and answer at least one area.</p>')+
+  '</div>';
+
+  var tableRows=items.map(function(item){
+    var fLabel=FREQ_OPTIONS[item.freq]?FREQ_OPTIONS[item.freq].label:'Not answered';
+    var lLabel=LEVEL_OPTIONS[item.level]?LEVEL_OPTIONS[item.level].label:'Not answered';
+    return '<tr><td><strong>'+item.domain.icon+' '+item.domain.title+'</strong></td><td>'+fLabel+'</td><td>'+lLabel+'</td><td>'+reportedSummary(item.total)+'</td></tr>';
+  }).join('');
+  var sec3='<div class="report-section"><h2>\uD83D\uDCCA Support pattern summary</h2>'+
+    '<p style="font-size:.9rem;color:var(--muted);margin-bottom:12px">This table restates your answers. It does not rank, score or predict anything. Only the NDIA decides what is reasonable and necessary.</p>'+
+    '<table class="sn-table"><thead><tr><th>Life area</th><th>How often</th><th>How much</th><th>What you reported</th></tr></thead><tbody>'+tableRows+'</tbody></table>'+
+  '</div>';
+
+  var gaps=DOMAINS.filter(function(d,i){
+    if(i>=cap)return false;
+    return !state.domains[i]||(state.domains[i].freq===undefined&&state.domains[i].level===undefined);
+  });
+  var lockedNote=unlocked?'':'<p style="font-size:.9rem;color:var(--muted);margin-top:10px">You are in the free preview. Areas 4 to 12 are not included in this summary. <a href="#" onclick="goToUpgrade();return false" style="color:var(--purple);font-weight:700">Unlock all 12 areas</a>.</p>';
+  var sec4='<div class="report-section"><h2>\u26A0\uFE0F Areas not yet completed</h2>'+
+    (gaps.length===0?'<p style="color:var(--green);font-weight:700">\u2705 All available areas are complete.</p>':
+      '<p style="font-size:.92rem;color:var(--muted);margin-bottom:12px">You have not answered these areas yet. Think about whether you have support needs here before your assessment.</p>'+
+      gaps.map(function(d){return '<div style="padding:9px 0;border-bottom:1px solid #F1EEF6;font-size:.92rem">'+d.icon+' <strong>'+d.title+'</strong>. '+d.desc+'</div>';}).join(''))+
+    lockedNote+
+  '</div>';
+
+  var sec5='<div class="report-section"><h2>\uD83D\uDE80 Next steps</h2>'+
+    '<div style="display:grid;gap:10px;font-size:.92rem">'+
+      '<div style="padding:13px;background:var(--green-soft);border-radius:9px;border-left:4px solid var(--green)"><strong>1. Read your statements.</strong><br>Check each one. Edit your notes if anything does not sound like your real experience.</div>'+
+      '<div style="padding:13px;background:var(--teal-soft);border-radius:9px;border-left:4px solid var(--teal)"><strong>2. Gather supporting evidence.</strong><br>Collect reports from your GP, OT, psychologist or other health professionals.</div>'+
+      '<div style="padding:13px;background:var(--purple-soft);border-radius:9px;border-left:4px solid var(--purple)"><strong>3. Share with your support coordinator.</strong><br>Talk through any areas where more evidence would help.</div>'+
+      '<div style="padding:13px;background:var(--amber-soft);border-radius:9px;border-left:4px solid var(--amber)"><strong>4. Prepare examples of your hardest days.</strong><br>Real examples are more powerful than general statements.</div>'+
+      '<div style="padding:13px;background:#F4F3F7;border-radius:9px;border-left:4px solid var(--muted)"><strong>5. Know your rights.</strong><br>You can have a support person or advocate with you at your assessment. You can ask for a different assessor if you have concerns.</div>'+
+    '</div>'+
+    '<div class="disclaimer-box">\u26A0\uFE0F <strong>Important:</strong> This is a self-directed preparation tool only. It is not an official NDIS or NDIA document. It is not legal, medical or registered advocacy advice. Every statement was built from your own answers. Review it with a qualified professional before any formal assessment. NDIS eligibility and funding decisions are made only by the NDIA. Plan Decoder is independent. It is not affiliated with the NDIA, the NDIS Quality and Safeguards Commission, or the Australian Government. Your data stays on your device.</div>'+
+  '</div>';
+
+  var upsell=unlocked?'':'<div class="upgrade-card" style="margin-top:4px"><h3>This is your free preview summary</h3><p>The full version covers all 12 life areas and builds your complete summary. Your answers carry over.</p><a class="upgrade-btn" href="https://buy.stripe.com/cNi4gA6Gx2ZR0x96BA4Ni0q" target="_blank" rel="noopener">Unlock all 12 areas</a></div>';
+
+  ro.innerHTML=
+    '<div class="report-actions">'+
+      '<button class="btn-print" onclick="window.print()">\uD83D\uDDA8\uFE0F Print or save PDF</button>'+
+      '<button class="btn-edit" onclick="goToEdit()">\u270F\uFE0F Edit answers</button>'+
+      '<button class="btn-restart" onclick="restartTool()">\u21BA Start over</button>'+
+    '</div>'+
+    '<div class="report-header">'+
+      '<h1>My Support Needs Preparation Summary</h1>'+
+      '<p>Prepared with Plan Decoder. A self-directed preparation tool.</p>'+
+      metaHTML+
+    '</div>'+
+    TOP_DISCLAIMER+
+    sec1+sec2+sec3+sec4+sec5+upsell;
+}
+
+function goToEdit(){
+  document.getElementById('reportOut').style.display='none';
+  document.getElementById('app').style.display='';
+  state.step=2;render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function restartTool(){
+  if(confirm('This will clear all your answers. Are you sure?')){
+    state={step:0,info:{},domains:[]};
+    try{localStorage.removeItem(LS_STATE);}catch(e){}
+    document.getElementById('reportOut').style.display='none';
+    document.getElementById('app').style.display='';
+    render();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function render(){
+  document.getElementById('reportOut').style.display='none';
+  document.getElementById('app').style.display='';
+  updateProgress();
+  trySave();
+  var app=document.getElementById('app');
+  var s=state.step;
+  if(s===0)app.innerHTML=renderIntro();
+  else if(s===1)app.innerHTML=renderInfo();
+  else if(s>=2&&s<=13)app.innerHTML=renderDomain(s-2);
+  else renderReport();
+}
+
+function v(id){var el=document.getElementById(id);return el?el.value:'';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function esc2(s){return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+tryLoad();
+// If a free user saved progress beyond the cap in an older version, clamp gracefully
+if(!isUnlocked()&&state.step>1&&state.step<=13&&(state.step-2)>=FREE_LIMIT){state.step=2+FREE_LIMIT;}
+render();
+</script>
+</body>
+</html>

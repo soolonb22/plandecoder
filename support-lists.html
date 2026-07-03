@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Lists — NDIS & School Planning Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:      #0f172a;
+    --mid:      #475569;
+    --soft:     #94a3b8;
+    --rule:     #e2e8f0;
+    --fill:     #f8fafc;
+    --page:     #ffffff;
+    --green:    #16a34a;
+    --green-lt: #dcfce7;
+    --green-md: #bbf7d0;
+    --green-dk: #14532d;
+    --amber:    #d97706;
+    --amber-lt: #fef3c7;
+    --amber-md: #fde68a;
+    --amber-dk: #78350f;
+    --red:      #dc2626;
+    --red-lt:   #fee2e2;
+    --red-md:   #fecaca;
+    --red-dk:   #7f1d1d;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0f172a;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: #0f172a;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .logo { display: flex; align-items: center; gap: 0.75rem; }
+  .logo-icon {
+    display: flex;
+    gap: 3px;
+  }
+  .logo-pip {
+    width: 10px; height: 28px;
+    border-radius: 3px;
+  }
+  .logo-text-wrap { }
+  .logo-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .logo-sub {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* MODE TOGGLE */
+  .mode-toggle {
+    display: flex;
+    gap: 0;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 3px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .mode-btn {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mode-btn.active {
+    background: #fff;
+    color: var(--ink);
+  }
+
+  /* LEGEND */
+  .legend-bar {
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0.75rem 2rem;
+  }
+  .legend-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    font-weight: 500;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .legend-label { color: rgba(255,255,255,0.35); font-size:0.7rem; margin-right: 0.25rem; }
+
+  /* ── MAIN ── */
+  .main {
+    background: #f1f5f9;
+    min-height: calc(100vh - 100px);
+    padding: 2rem 1.5rem 4rem;
+  }
+  .inner { max-width: 900px; margin: 0 auto; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--page);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--rule);
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .hero-field { flex: 1; min-width: 180px; }
+  .hero-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--mid);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+  }
+  .hero-field input {
+    width: 100%;
+    background: var(--fill);
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  .hero-field input:focus { outline: none; border-color: #334155; background: #fff; }
+
+  /* ── THREE COLUMNS ── */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── COLUMN ── */
+  .col { display: flex; flex-direction: column; gap: 0; }
+
+  .col-header {
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.25rem 0.85rem;
+  }
+  .col-header-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.3rem;
+  }
+  .col-icon { font-size: 1.1rem; }
+  .col-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .col-count {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.15rem 0.55rem;
+    border-radius: 20px;
+  }
+  .col-desc {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.4;
+  }
+
+  .col-body {
+    background: var(--page);
+    border: 1.5px solid var(--rule);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── SUPPORT ITEMS ── */
+  .support-list { list-style: none; margin-bottom: 0.75rem; flex: 1; }
+
+  .support-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.4rem;
+    border: 1.5px solid transparent;
+    position: relative;
+    cursor: default;
+    transition: all 0.12s;
+  }
+  .support-item:hover { filter: brightness(0.97); }
+
+  .support-item.green { background: var(--green-lt); border-color: var(--green-md); }
+  .support-item.amber { background: var(--amber-lt); border-color: var(--amber-md); }
+  .support-item.red   { background: var(--red-lt);   border-color: var(--red-md);   }
+
+  .support-item-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .green .support-item-dot { background: var(--green); }
+  .amber .support-item-dot { background: var(--amber); }
+  .red   .support-item-dot { background: var(--red); }
+
+  .support-item-body { flex: 1; }
+  .support-item-text {
+    font-size: 0.85rem;
+    color: var(--ink);
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 0.2rem;
+  }
+  .support-item-note {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  .green .support-item-note { color: var(--green-dk); }
+  .amber .support-item-note { color: var(--amber-dk); }
+  .red   .support-item-note { color: var(--red-dk); }
+
+  .support-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+  }
+  .tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .green .tag { background: var(--green-md); color: var(--green-dk); }
+  .amber .tag { background: var(--amber-md); color: var(--amber-dk); }
+  .red   .tag { background: var(--red-md);   color: var(--red-dk); }
+
+  .item-delete {
+    position: absolute;
+    top: 0.35rem; right: 0.5rem;
+    background: none; border: none;
+    font-size: 0.7rem; color: var(--soft);
+    cursor: pointer; padding: 2px 4px;
+    border-radius: 4px; opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .support-item:hover .item-delete { opacity: 1; }
+  .item-delete:hover { background: rgba(0,0,0,0.08); }
+
+  /* ── ADD FORM ── */
+  .add-form {
+    background: var(--fill);
+    border: 1.5px dashed var(--rule);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: auto;
+  }
+  .add-form input,
+  .add-form textarea,
+  .add-form select {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    resize: none;
+  }
+  .add-form input:focus,
+  .add-form textarea:focus,
+  .add-form select:focus { outline: none; }
+  .add-form textarea { min-height: 50px; }
+  .add-form-btns { display: flex; gap: 0.4rem; }
+  .add-save {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    transition: opacity 0.15s;
+  }
+  .add-save:hover { opacity: 0.88; }
+  .col-green .add-save { background: var(--green); }
+  .col-amber .add-save { background: var(--amber); }
+  .col-red   .add-save { background: var(--red); }
+
+  /* ── EXAMPLES PANEL ── */
+  .examples-section {
+    background: var(--page);
+    border-radius: 12px;
+    border: 1px solid var(--rule);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .examples-header {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--mid);
+    user-select: none;
+    background: var(--fill);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .examples-section.open .examples-header { border-bottom-color: var(--rule); }
+  .examples-toggle { font-size: 0.75rem; color: var(--soft); transition: transform 0.2s; }
+  .examples-section.open .examples-toggle { transform: rotate(180deg); }
+  .examples-body { display: none; padding: 1.25rem; }
+  .examples-section.open .examples-body { display: block; }
+  .examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+  .example-col-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid;
+  }
+  .example-col-title.green { color: var(--green); border-color: var(--green); }
+  .example-col-title.amber { color: var(--amber); border-color: var(--amber); }
+  .example-col-title.red   { color: var(--red);   border-color: var(--red); }
+
+  .example-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+  .example-item::before {
+    content: '•';
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .example-item.green::before { color: var(--green); }
+  .example-item.amber::before { color: var(--amber); }
+  .example-item.red::before   { color: var(--red); }
+
+  .example-add-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-top: 0.2rem;
+    transition: opacity 0.15s;
+    display: block;
+  }
+  .example-add-btn:hover { opacity: 0.8; }
+  .example-add-btn.green { background: var(--green-lt); color: var(--green-dk); }
+  .example-add-btn.amber { background: var(--amber-lt); color: var(--amber-dk); }
+  .example-add-btn.red   { background: var(--red-lt);   color: var(--red-dk); }
+
+  /* ── SUMMARY ── */
+  .summary-bar {
+    background: var(--page);
+    border-radius: 12px;
+    border: 1px solid var(--rule);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .summary-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .summary-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  .summary-label { font-size: 0.75rem; color: var(--soft); }
+  .summary-divider { width: 1px; height: 28px; background: var(--rule); }
+  .export-btn-main {
+    margin-left: auto;
+    padding: 0.6rem 1.25rem;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .export-btn-main:hover { opacity: 0.85; }
+
+  @media (max-width: 700px) {
+    .columns { grid-template-columns: 1fr; }
+    .examples-grid { grid-template-columns: 1fr; }
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .summary-divider { display: none; }
+  }
+
+  @media print {
+    body { background: white; }
+    .header, .legend-bar, .add-form, .item-delete, .export-btn-main,
+    .examples-section, .mode-toggle { display: none !important; }
+    .main { background: white; padding: 0; }
+    .col-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .support-item { break-inside: avoid; }
+    .columns { gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <div class="logo-pip" style="background:#16a34a"></div>
+        <div class="logo-pip" style="background:#d97706"></div>
+        <div class="logo-pip" style="background:#dc2626"></div>
+      </div>
+      <div class="logo-text-wrap">
+        <div class="logo-title">Support Lists</div>
+        <div class="logo-sub">NDIS &amp; School Planning Tool</div>
+      </div>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-ndis" onclick="setMode('ndis')">NDIS</button>
+      <button class="mode-btn" id="mode-school" onclick="setMode('school')">School</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-bar">
+  <div class="legend-inner">
+    <span class="legend-label">Colour key:</span>
+    <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div>Green = Funded / Approved Supports</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Amber = Replacement / Alternative Supports</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div>Red = Excluded / Not Approved</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="inner">
+
+    <!-- PERSON DETAILS -->
+    <div class="hero">
+      <div class="hero-field">
+        <label>Name / Reference</label>
+        <input type="text" id="meta-name" placeholder="e.g. Jordan S. (de-identified)" oninput="saveMeta()">
+      </div>
+      <div class="hero-field">
+        <label>Plan / Review Date</label>
+        <input type="text" id="meta-date" placeholder="e.g. June 2026" oninput="saveMeta()">
+      </div>
+      <div class="hero-field">
+        <label>Prepared by</label>
+        <input type="text" id="meta-by" placeholder="e.g. Support Coordinator, Teacher..." oninput="saveMeta()">
+      </div>
+      <div class="hero-field">
+        <label>Context / Notes</label>
+        <input type="text" id="meta-context" placeholder="e.g. Post plan review — July 2026 changes" oninput="saveMeta()">
+      </div>
+    </div>
+
+    <!-- EXAMPLES -->
+    <div class="examples-section" id="examples-section">
+      <div class="examples-header" onclick="toggleExamples()">
+        <span>💡 Psychosocial &amp; Carer Examples — click any to add to your list</span>
+        <span class="examples-toggle">▼</span>
+      </div>
+      <div class="examples-body" id="examples-body"></div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-bar">
+      <div class="summary-stat">
+        <div class="summary-num" id="count-green" style="color:var(--green)">0</div>
+        <div><div style="font-weight:700;color:var(--green)">Funded</div><div class="summary-label">supports</div></div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-stat">
+        <div class="summary-num" id="count-amber" style="color:var(--amber)">0</div>
+        <div><div style="font-weight:700;color:var(--amber)">Replacement</div><div class="summary-label">supports</div></div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-stat">
+        <div class="summary-num" id="count-red" style="color:var(--red)">0</div>
+        <div><div style="font-weight:700;color:var(--red)">Excluded</div><div class="summary-label">supports</div></div>
+      </div>
+      <button class="export-btn-main" onclick="exportLists()">📋 Copy to Clipboard</button>
+    </div>
+
+    <!-- THREE COLUMNS -->
+    <div class="columns">
+      <!-- GREEN -->
+      <div class="col col-green">
+        <div class="col-header" style="background:linear-gradient(135deg,#14532d,#16a34a)">
+          <div class="col-header-top">
+            <span class="col-icon">✅</span>
+            <span class="col-title">Funded Supports</span>
+            <span class="col-count" id="badge-green">0</span>
+          </div>
+          <div class="col-desc">Approved, active supports — currently funded or in place</div>
+        </div>
+        <div class="col-body">
+          <ul class="support-list" id="list-green"></ul>
+          <div class="add-form">
+            <input type="text" id="add-green-title" placeholder="Support name..." onkeydown="if(event.key==='Enter')quickAdd('green')">
+            <textarea id="add-green-note" placeholder="Notes / rationale / hours / cost (optional)..." rows="2"></textarea>
+            <div id="add-green-tags-row" style="margin-bottom:0.4rem"></div>
+            <div class="add-form-btns">
+              <button class="add-save" onclick="quickAdd('green')">+ Add to Funded</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AMBER -->
+      <div class="col col-amber">
+        <div class="col-header" style="background:linear-gradient(135deg,#78350f,#d97706)">
+          <div class="col-header-top">
+            <span class="col-icon">🔄</span>
+            <span class="col-title">Replacement Supports</span>
+            <span class="col-count" id="badge-amber">0</span>
+          </div>
+          <div class="col-desc">Alternatives or interim supports while primary supports are unavailable</div>
+        </div>
+        <div class="col-body">
+          <ul class="support-list" id="list-amber"></ul>
+          <div class="add-form">
+            <input type="text" id="add-amber-title" placeholder="Replacement support..." onkeydown="if(event.key==='Enter')quickAdd('amber')">
+            <textarea id="add-amber-note" placeholder="What it replaces / why / conditions (optional)..." rows="2"></textarea>
+            <div class="add-form-btns">
+              <button class="add-save" onclick="quickAdd('amber')">+ Add Replacement</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RED -->
+      <div class="col col-red">
+        <div class="col-header" style="background:linear-gradient(135deg,#7f1d1d,#dc2626)">
+          <div class="col-header-top">
+            <span class="col-icon">🚫</span>
+            <span class="col-title">Excluded Supports</span>
+            <span class="col-count" id="badge-red">0</span>
+          </div>
+          <div class="col-desc">Supports removed, rejected, or not approved — document the reason</div>
+        </div>
+        <div class="col-body">
+          <ul class="support-list" id="list-red"></ul>
+          <div class="add-form">
+            <input type="text" id="add-red-title" placeholder="Excluded support..." onkeydown="if(event.key==='Enter')quickAdd('red')">
+            <textarea id="add-red-note" placeholder="Reason for exclusion / who decided / date (optional)..." rows="2"></textarea>
+            <div class="add-form-btns">
+              <button class="add-save" onclick="quickAdd('red')">+ Add Excluded</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── EXAMPLES DATA ──
+const EXAMPLES = {
+  ndis: {
+    green: [
+      { text: 'Support worker — daily personal care (2hrs/day)', tags: ['Psychosocial'] },
+      { text: 'Psychology sessions — trauma-informed (fortnightly)', tags: ['Mental Health'] },
+      { text: 'Support coordinator (50hrs/year)', tags: ['Coordination'] },
+      { text: 'Respite care — in-home (48hrs/quarter)', tags: ['Carer Support'] },
+      { text: 'OT assessment and sensory toolkit', tags: ['Allied Health'] },
+      { text: 'Community access support (3hrs/week)', tags: ['Psychosocial'] },
+      { text: 'Assistive technology — communication device', tags: ['AT'] },
+      { text: 'Plan management (monthly)', tags: ['Plan Mgmt'] },
+      { text: 'Social skills group program (Term 1 & 3)', tags: ['Capacity Building'] },
+      { text: 'Carer wellbeing support sessions', tags: ['Carer Support'] },
+    ],
+    amber: [
+      { text: 'Peer support group (while psychology waitlist active)', tags: ['Interim'] },
+      { text: 'Family member providing personal care (unsustainable)', tags: ['Informal', 'At Risk'] },
+      { text: 'GP mental health plan (6 sessions — bridge to NDIS psych)', tags: ['Interim'] },
+      { text: 'Online OT program while in-person unavailable', tags: ['Interim'] },
+      { text: 'Community centre programs (low-cost alternative)', tags: ['Low Cost'] },
+      { text: 'Neighbour/volunteer transport (temporary)', tags: ['Informal'] },
+      { text: 'Phone check-in support (replacing face-to-face)', tags: ['Modified'] },
+      { text: 'Parent providing regulation support (carer burnout risk)', tags: ['Carer', 'Unsustainable'] },
+    ],
+    red: [
+      { text: 'Social and community participation funding (cut July 2026)', tags: ['July 2026 Cut'] },
+      { text: 'Daily living support — rejected (NDIA: SNA score)', tags: ['Rejected', 'Review Pending'] },
+      { text: 'Dietitian support — deemed not disability-related', tags: ['Rejected'] },
+      { text: 'Gym membership — not funded', tags: ['Not Funded'] },
+      { text: 'Medication management — health system responsibility', tags: ['Health System'] },
+      { text: 'School support — DoE responsibility', tags: ['Other System'] },
+      { text: 'Transport funding — removed at last review', tags: ['Removed', 'Challenge Needed'] },
+      { text: 'Communication device upgrade — pending review', tags: ['Under Review'] },
+    ],
+  },
+  school: {
+    green: [
+      { text: 'Learning Support Officer (LSO) — 15hrs/week in class', tags: ['In Class'] },
+      { text: 'Individual Education Plan (IEP) goals — active', tags: ['IEP'] },
+      { text: 'Sensory toolkit in classroom (fidgets, headphones, weighted vest)', tags: ['Sensory'] },
+      { text: 'Visual schedule on desk', tags: ['Visual Support'] },
+      { text: 'Flexible seating arrangement', tags: ['Environment'] },
+      { text: 'Reduced homework load', tags: ['Adjustment'] },
+      { text: 'Safe quiet space access — withdrawal room', tags: ['Safe Space'] },
+      { text: 'Trauma-informed teacher training (whole school)', tags: ['Staff'] },
+      { text: 'Daily check-in/check-out with key adult', tags: ['Wellbeing'] },
+      { text: 'Modified assessment format', tags: ['Adjustment'] },
+    ],
+    amber: [
+      { text: 'Peer buddy system (while LSO unavailable)', tags: ['Interim'] },
+      { text: 'Phone/tablet use for regulation (instead of full sensory room)', tags: ['Alternative'] },
+      { text: 'Parent SMS check-in daily (replacing formal meeting)', tags: ['Communication'] },
+      { text: 'Shortened school day (transition arrangement)', tags: ['Modified Attendance'] },
+      { text: 'Lunch in classroom (while sensory room unavailable)', tags: ['Environment'] },
+      { text: 'Supply teacher briefing note (when regular teacher absent)', tags: ['Continuity'] },
+      { text: 'Online learning option (dysregulation days)', tags: ['Flexible'] },
+      { text: 'Volunteer reading mentor (while specialist unavailable)', tags: ['Interim'] },
+    ],
+    red: [
+      { text: 'Full LSO 1:1 support requested — funding not approved', tags: ['Not Funded'] },
+      { text: 'Sensory room access removed — room repurposed', tags: ['Removed'] },
+      { text: 'Specialist reading program — waitlist 2 terms', tags: ['Unavailable'] },
+      { text: 'Reduced class size — not possible this term', tags: ['Not Possible'] },
+      { text: 'School psychologist referral — 8 week waitlist', tags: ['Waitlist'] },
+      { text: 'Swimming carnival exemption — denied by principal', tags: ['Denied'] },
+      { text: 'Second LSO hour — budget not available', tags: ['Budget'] },
+      { text: 'External therapy during school hours — denied', tags: ['Policy'] },
+    ],
+  },
+};
+
+// ── STATE ──
+let mode = localStorage.getItem('sl-mode') || 'ndis';
+let lists = JSON.parse(localStorage.getItem('sl-lists') || '{"green":[],"amber":[],"red":[]}');
+
+// ── SAVE/LOAD ──
+function save() { localStorage.setItem('sl-lists', JSON.stringify(lists)); }
+function saveMeta() {
+  ['meta-name','meta-date','meta-by','meta-context'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) localStorage.setItem('sl-' + id, el.value);
+  });
+}
+function loadMeta() {
+  ['meta-name','meta-date','meta-by','meta-context'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { const v = localStorage.getItem('sl-' + id); if (v) el.value = v; }
+  });
+}
+
+// ── MODE ──
+function setMode(m) {
+  mode = m;
+  localStorage.setItem('sl-mode', m);
+  document.getElementById('mode-ndis').classList.toggle('active', m === 'ndis');
+  document.getElementById('mode-school').classList.toggle('active', m === 'school');
+  buildExamples();
+}
+
+// ── RENDER LISTS ──
+function renderAll() {
+  ['green','amber','red'].forEach(renderList);
+  updateCounts();
+}
+
+function renderList(color) {
+  const ul = document.getElementById('list-' + color);
+  ul.innerHTML = '';
+  if (!lists[color] || !lists[color].length) {
+    const li = document.createElement('li');
+    li.style.cssText = 'font-size:0.8rem;color:var(--soft);padding:0.5rem 0;font-style:italic;text-align:center;';
+    li.textContent = 'No items yet — add below or use examples ↑';
+    ul.appendChild(li);
+    return;
+  }
+  lists[color].forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'support-item ' + color;
+    li.innerHTML = `
+      <div class="support-item-dot"></div>
+      <div class="support-item-body">
+        <div class="support-item-text">${item.text}</div>
+        ${item.note ? `<div class="support-item-note">${item.note}</div>` : ''}
+        ${item.tags && item.tags.length ? `<div class="support-item-tags">${item.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
+      </div>
+      <button class="item-delete" onclick="deleteItem('${color}',${i})" title="Remove">✕</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+function updateCounts() {
+  ['green','amber','red'].forEach(c => {
+    const n = (lists[c] || []).length;
+    document.getElementById('badge-' + c).textContent = n;
+    document.getElementById('count-' + c).textContent = n;
+  });
+}
+
+// ── ADD ITEM ──
+function quickAdd(color) {
+  const titleEl = document.getElementById('add-' + color + '-title');
+  const noteEl  = document.getElementById('add-' + color + '-note');
+  const text = titleEl.value.trim();
+  if (!text) { titleEl.focus(); return; }
+  if (!lists[color]) lists[color] = [];
+  lists[color].push({ text, note: noteEl.value.trim(), tags: [], id: Date.now() });
+  save();
+  titleEl.value = '';
+  noteEl.value = '';
+  renderList(color);
+  updateCounts();
+}
+
+function addFromExample(color, text, tags) {
+  if (!lists[color]) lists[color] = [];
+  if (lists[color].find(i => i.text === text)) return;
+  lists[color].push({ text, note: '', tags, id: Date.now() });
+  save();
+  renderList(color);
+  updateCounts();
+}
+
+function deleteItem(color, idx) {
+  lists[color].splice(idx, 1);
+  save();
+  renderList(color);
+  updateCounts();
+}
+
+// ── EXAMPLES ──
+function toggleExamples() {
+  document.getElementById('examples-section').classList.toggle('open');
+}
+
+function buildExamples() {
+  const body = document.getElementById('examples-body');
+  const data = EXAMPLES[mode];
+  body.innerHTML = `
+    <div class="examples-grid">
+      ${['green','amber','red'].map(c => `
+        <div>
+          <div class="example-col-title ${c}">${c==='green'?'✅ Funded / Approved':c==='amber'?'🔄 Replacement / Alternative':'🚫 Excluded / Rejected'}</div>
+          ${data[c].map(ex => `
+            <div class="example-item ${c}">
+              <div>
+                <div style="margin-bottom:0.2rem">${ex.text}</div>
+                ${ex.tags.map(t=>`<span class="tag ${c}" style="display:inline-block;margin-right:3px;margin-bottom:2px">${t}</span>`).join('')}
+                <button class="example-add-btn ${c}" onclick='addFromExample("${c}",${JSON.stringify(ex.text)},${JSON.stringify(ex.tags)})'>+ Add to list</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ── EXPORT ──
+function exportLists() {
+  const name = document.getElementById('meta-name').value;
+  const date = document.getElementById('meta-date').value;
+  const by = document.getElementById('meta-by').value;
+  const ctx = document.getElementById('meta-context').value;
+  const modeLabel = mode === 'ndis' ? 'NDIS' : 'School';
+
+  let t = `SUPPORT LISTS — ${modeLabel.toUpperCase()} PLANNING\n`;
+  if (name) t += `Name: ${name}\n`;
+  if (date) t += `Plan/Review Date: ${date}\n`;
+  if (by) t += `Prepared by: ${by}\n`;
+  if (ctx) t += `Context: ${ctx}\n`;
+  t += `Generated: ${new Date().toLocaleDateString('en-AU', {day:'numeric',month:'long',year:'numeric'})}\n\n`;
+  t += '═'.repeat(50) + '\n\n';
+
+  const sections = [
+    { color: 'green', label: '✅ FUNDED / APPROVED SUPPORTS' },
+    { color: 'amber', label: '🔄 REPLACEMENT / ALTERNATIVE SUPPORTS' },
+    { color: 'red',   label: '🚫 EXCLUDED / REJECTED SUPPORTS' },
+  ];
+
+  sections.forEach(s => {
+    t += s.label + '\n' + '─'.repeat(40) + '\n';
+    const items = lists[s.color] || [];
+    if (!items.length) { t += '(none recorded)\n'; }
+    else {
+      items.forEach(item => {
+        t += `• ${item.text}`;
+        if (item.tags && item.tags.length) t += ` [${item.tags.join(', ')}]`;
+        if (item.note) t += `\n  → ${item.note}`;
+        t += '\n';
+      });
+    }
+    t += '\n';
+  });
+
+  t += '─'.repeat(50) + '\n';
+  t += 'Know Your NDIS Rights · knowyourndisrights.pages.dev\n';
+
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = document.querySelector('.export-btn-main');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy to Clipboard', 2000);
+  });
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  loadMeta();
+  setMode(mode);
+  buildExamples();
+  renderAll();
+  document.getElementById('examples-section').classList.add('open');
+});
+</script>
+
+<footer style="background:#3E1F57;color:rgba(255,255,255,.85);padding:26px 20px;text-align:center;font-size:.85rem;line-height:1.7;margin-top:40px;font-family:system-ui,sans-serif">
+  <p style="max-width:680px;margin:0 auto"><strong style="color:#fff">This is an independent resource.</strong> It is not affiliated with, endorsed by, or part of the NDIA, the NDIS Quality and Safeguards Commission, or the Australian Government.</p>
+  <p style="max-width:680px;margin:8px auto 0">This tool helps you prepare and organise your own information. It is general information only. It is not legal, medical, educational or registered advocacy advice.</p>
+  <p style="margin-top:10px;font-size:.78rem;opacity:.8">Last reviewed: 3 July 2026 &middot; <a href="privacy.html" style="color:#7FD8DF">Privacy &amp; Terms</a></p>
+</footer>
+
+</body>
+</html>

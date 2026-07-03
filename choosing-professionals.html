@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choosing Professionals · NDIS Participant Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:'Source Sans 3',sans-serif; background:#FBF7EC; color:#3A372E; line-height:1.6; }
+  h1,h2,h3 { font-family:'Spectral',serif; color:#171A33; margin:0; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ── Accessibility bar ── */
+  .a11y-bar { position: sticky; top:0; z-index:100; background:#171A33; color:#fff; display:flex; align-items:center; gap:10px; padding:10px 20px; flex-wrap:wrap; font-size:.85rem; }
+  .a11y-bar button { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:8px; padding:6px 12px; font-size:.82rem; cursor:pointer; }
+  .a11y-bar button:hover { background:rgba(255,255,255,.22); }
+  .a11y-bar .spacer { flex:1; }
+
+  /* ── Header ── */
+  .course-head { padding: 34px 0 10px; }
+  .eyebrow { font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; font-weight:700; color:#9A6F1E; margin-bottom:8px; }
+  h1 { font-size:2.4rem; font-weight:800; line-height:1.1; margin-bottom:10px; }
+  .sub { font-size:1.05rem; color:#5C5746; max-width:640px; }
+  .tags { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .tag { font-size:.78rem; font-weight:600; background:#fff; border:1px solid #E6DCC6; border-radius:20px; padding:5px 14px; color:#5C5746; }
+
+  /* ── On this page nav ── */
+  nav.onpage { background:#fff; border:1px solid #E6DCC6; border-radius:12px; padding:14px 18px; margin:22px 0; font-size:.9rem; }
+  nav.onpage a { color:#175349; text-decoration:none; margin-right:16px; font-weight:600; }
+  nav.onpage a:hover { text-decoration:underline; }
+
+  section { margin-top:26px; }
+  .panel { background:#FBF7EC; border:1px solid #E0D5BC; border-radius:16px; padding:34px 38px; }
+  .section-label { font-size:.74rem; letter-spacing:.2em; text-transform:uppercase; font-weight:700; color:#9A6F1E; margin-bottom:8px; }
+  h2 { font-size:1.9rem; font-weight:800; margin-bottom:16px; }
+
+  .card { background:#fff; border:1px solid #E6DCC6; border-radius:12px; padding:20px 22px; margin-bottom:16px; }
+  .card h3 { font-size:1.2rem; font-weight:700; color:#2A2E50; margin-bottom:8px; }
+  .card p { margin:0 0 8px; }
+  .card p:last-child { margin-bottom:0; }
+
+  .tip { background:#FBF3DC; border-left:4px solid #C79A3A; border-radius:0 8px 8px 0; padding:12px 16px; margin:14px 0; }
+  .safe { background:#EAF4F1; border-left:4px solid #1F6F62; border-radius:0 8px 8px 0; padding:12px 16px; margin:14px 0; }
+  .warn { background:#FCEEEA; border-left:4px solid #B4472A; border-radius:0 8px 8px 0; padding:12px 16px; margin:14px 0; }
+
+  .say { font-style:italic; background:#F7F3E6; border:1px solid #EADFC6; border-radius:10px; padding:14px 16px; margin:10px 0; }
+  .numlist { display:grid; gap:10px; margin:14px 0; }
+  .numitem { display:grid; grid-template-columns:30px 1fr; gap:12px; background:#F7F3E6; border:1px solid #EADFC6; border-radius:10px; padding:12px 14px; }
+  .numitem span.n { font-family:'Spectral',serif; font-weight:800; font-size:1.2rem; color:#C79A3A; }
+
+  .scenario { background:#fff; border:1px solid #E6DCC6; border-radius:12px; padding:20px 22px; margin-bottom:14px; }
+  .scenario .num { display:inline-block; font-family:'Spectral',serif; font-weight:800; color:#C79A3A; font-size:1.1rem; margin-bottom:6px; }
+  .scenario .label { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#9A6F1E; margin-bottom:10px; }
+  .scenario h4 { font-size:1.02rem; font-weight:700; color:#171A33; margin:0 0 4px; }
+  .scenario .muted { color:#5C5746; font-size:.95rem; }
+
+  /* ── Summary tear-out ── */
+  .summary { background:#171A33; color:#fff; border-radius:16px; padding:34px 38px; }
+  .summary h2 { color:#fff; }
+  .summary .card { background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.18); }
+  .summary .card h3 { color:#F4D28A; }
+  .summary .card p { color:#D8D1BF; }
+  .numbers { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-top:14px; }
+  .numbers .n-card { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:14px 16px; }
+  .numbers .n-card .big { font-family:'Spectral',serif; font-weight:800; font-size:1.15rem; color:#F4D28A; }
+  .numbers .n-card .lbl { font-size:.82rem; color:#D8D1BF; }
+
+  /* ── Worksheet ── */
+  .worksheet { background:#fff; border:2px solid #1F6F62; border-radius:16px; padding:30px 34px; margin-top:26px; }
+  .worksheet h2 { font-size:1.6rem; }
+  .field { margin-bottom:16px; }
+  .field label { display:block; font-weight:600; font-size:.92rem; margin-bottom:5px; color:#2A2E50; }
+  .field input[type=text], .field textarea { width:100%; padding:10px 12px; border:1px solid #D9CFAF; border-radius:8px; font-family:inherit; font-size:.95rem; background:#FBF7EC; }
+  .field textarea { min-height:70px; resize:vertical; }
+  .checklist { display:flex; flex-direction:column; gap:8px; margin:10px 0; }
+  .checklist label { display:flex; align-items:flex-start; gap:10px; font-size:.94rem; background:#F7F3E6; border:1px solid #EADFC6; border-radius:8px; padding:10px 12px; cursor:pointer; }
+  .checklist input { margin-top:3px; }
+  .radio-row { display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 16px; }
+  .radio-row label { font-size:.88rem; background:#F7F3E6; border:1px solid #EADFC6; border-radius:20px; padding:6px 14px; cursor:pointer; }
+  .btnrow { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .btn { background:#1F6F62; color:#fff; border:none; border-radius:8px; padding:10px 20px; font-weight:600; font-size:.92rem; cursor:pointer; }
+  .btn.secondary { background:#fff; color:#1F6F62; border:1px solid #1F6F62; }
+  .btn:hover { opacity:.9; }
+  #ws-status { font-size:.85rem; color:#5C5746; margin-top:10px; }
+
+  footer.disclaimer { margin-top:36px; text-align:center; font-size:.8rem; color:#8A8570; line-height:1.7; padding:20px; }
+  .done-banner { background:#EAF4F1; border:1px solid #BFE0D8; border-radius:12px; padding:18px 22px; margin-top:24px; text-align:center; color:#175349; font-weight:600; display:none; }
+
+  @media print {
+    .a11y-bar, nav.onpage, .btnrow { display:none !important; }
+    body { background:#fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="a11y-bar no-print">
+  <button onclick="changeSize(1)">A+ Bigger text</button>
+  <button onclick="changeSize(-1)">A− Smaller text</button>
+  <button onclick="resetSize()">Reset</button>
+  <button onclick="readAloud()">🔊 Read aloud</button>
+  <button onclick="stopReading()">⏹ Stop</button>
+  <span class="spacer"></span>
+  <button onclick="window.print()">🖨 Print / Save PDF</button>
+</div>
+
+<div class="wrap">
+
+  <div class="course-head">
+    <div class="eyebrow">NDIS Participant Course · Module 2</div>
+    <h1>Choosing Professionals</h1>
+    <p class="sub">Interview providers and support workers with confidence, ask the right questions, and know the warning signs worth acting on.</p>
+    <div class="tags">
+      <span class="tag">Plain language</span>
+      <span class="tag">Current as of 2026</span>
+      <span class="tag">Built for every participant</span>
+    </div>
+  </div>
+
+  <nav class="onpage no-print" id="main-content">
+    <a href="#s-purpose">1 · Purpose</a>
+    <a href="#s-foundations">2 · Foundations</a>
+    <a href="#s-tools">3 · Practical Tools</a>
+    <a href="#s-scenarios">4 · Scenarios</a>
+    <a href="#s-summary">5 · Summary Sheet</a>
+    <a href="#s-worksheet">My Worksheet</a>
+  </nav>
+
+  <!-- 1 PURPOSE -->
+  <section id="s-purpose">
+    <div class="panel">
+      <div class="section-label">Section 1 · Start here</div>
+      <h2>Why this module matters</h2>
+      <p>Choosing who supports you is one of the biggest decisions in your NDIS journey. A good provider or support worker can change your daily life for the better. A poor fit, or someone acting in their own interest instead of yours, can cost you money, trust, and time.</p>
+      <div class="card">
+        <h3>The purpose</h3>
+        <p>To give you a clear, plain-language way to check a provider or worker before you commit, and the words to use if something doesn't feel right along the way.</p>
+      </div>
+      <div class="card">
+        <h3>Why it matters</h3>
+        <p>You hold the right to choose your own providers and change them if they don't work out. Knowing what to check before you sign anything protects your time, your funding, and your safety.</p>
+      </div>
+      <div class="tip">🎯 <strong>Learning goal:</strong> by the end of this module you will know what to check before choosing a provider, the questions worth asking, and the signs that mean it's time to look elsewhere.</div>
+    </div>
+  </section>
+
+  <!-- 2 FOUNDATIONS -->
+  <section id="s-foundations">
+    <div class="panel">
+      <div class="section-label">Section 2 · The foundations</div>
+      <h2>What to check before you choose</h2>
+
+      <div class="card">
+        <h3>Registered vs unregistered providers</h3>
+        <p>Some supports can only be delivered by a provider registered with the NDIS Commission. From 1 July 2026, this includes Supported Independent Living (SIL) and NDIS digital platform providers, they must be registered to keep delivering these supports. Providers unregistered for SIL before this date have until 1 October 2026 to complete registration or must stop delivering SIL.</p>
+        <p>For other supports, you can often choose a registered or unregistered provider. Registered providers are audited against the NDIS Practice Standards. Unregistered providers still must follow the NDIS Code of Conduct, the baseline of safe, respectful, honest conduct applies either way.</p>
+      </div>
+
+      <div class="card">
+        <h3>Worker screening checks</h3>
+        <p>An NDIS Worker Screening Check is done by your state or territory screening unit. It results in a worker being "cleared" or "excluded" from work with people with disability, and clearances expire after 5 years.</p>
+        <p>There isn't a blanket rule that every worker must hold a clearance before supporting you, but you have the right to ask for one and to accept only workers who hold a current clearance. You can ask your provider or Support Coordinator to confirm a worker's clearance in the NDIS Worker Screening Database.</p>
+      </div>
+
+      <div class="card">
+        <h3>The NDIS Code of Conduct baseline</h3>
+        <p>Every provider and worker, registered or not, must act with respect, honesty, and integrity, protect your privacy, and avoid or disclose any conflict of interest. If a provider only recommends their own services without explaining alternatives, that's a conflict of interest they're required to disclose.</p>
+      </div>
+
+      <div class="safe">✅ <strong>Worth confirming before you sign anything:</strong> registration status for the specific support (especially SIL), current worker screening clearance if that matters to you, a written service agreement, and a clear complaints process.</div>
+    </div>
+  </section>
+
+  <!-- 3 PRACTICAL TOOLS -->
+  <section id="s-tools">
+    <div class="panel">
+      <div class="section-label">Section 3 · Practical tools</div>
+      <h2>Words and questions that work</h2>
+      <p>Here are practical scripts and a red-flag list you can use before and during your first conversations with a provider.</p>
+
+      <div class="numlist">
+        <div class="numitem"><span class="n">1</span><div><strong style="color:#171A33;">Ask about registration.</strong> "Are you registered with the NDIS Commission for this support? Can I see your registration or ask you to confirm it?"</div></div>
+        <div class="numitem"><span class="n">2</span><div><strong style="color:#171A33;">Ask about the worker.</strong> "Does the person supporting me hold a current NDIS Worker Screening clearance? Can this be confirmed?"</div></div>
+        <div class="numitem"><span class="n">3</span><div><strong style="color:#171A33;">Ask about cost.</strong> "Can you show me how this cost compares to the NDIS Price Guide, and explain any difference?"</div></div>
+        <div class="numitem"><span class="n">4</span><div><strong style="color:#171A33;">Ask about alternatives.</strong> "Are there other providers or options you'd recommend, not just your own services?"</div></div>
+        <div class="numitem"><span class="n">5</span><div><strong style="color:#171A33;">Ask about the agreement.</strong> "Can I see a written service agreement before I commit, including how to end it?"</div></div>
+        <div class="numitem"><span class="n">6</span><div><strong style="color:#171A33;">Ask about complaints.</strong> "What's your process if I'm unhappy with a support, and how do I contact the NDIS Commission if we can't resolve it?"</div></div>
+      </div>
+
+      <div class="card">
+        <h3>Red flags worth acting on</h3>
+        <ul>
+          <li>They only recommend their own company or partner services, without explaining alternatives.</li>
+          <li>They ask for your passwords, login details, or access to your phone or computer, an ethical provider will never ask for this.</li>
+          <li>Pricing seems inconsistent, unexplained, or higher than the NDIS Price Guide without a clear reason.</li>
+          <li>They pressure you to sign quickly, or discourage you from getting a second opinion.</li>
+          <li>They can't or won't confirm registration or worker screening status when asked.</li>
+        </ul>
+      </div>
+
+      <div class="warn">⚠️ If you feel unsafe, or something serious has happened, contact the NDIS Commission on <strong>1800 035 544</strong>. In an emergency, call <strong>000</strong>.</div>
+    </div>
+  </section>
+
+  <!-- 4 SCENARIOS -->
+  <section id="s-scenarios">
+    <div class="panel">
+      <div class="section-label">Section 4 · Real-world scenarios</div>
+      <h2>Choosing professionals in everyday life</h2>
+
+      <div class="scenario">
+        <span class="num">01</span>
+        <div class="label">Only their own services offered</div>
+        <h4>The issue</h4>
+        <p class="muted">A provider keeps suggesting their own add-on services whenever you raise a need, without mentioning other options.</p>
+        <h4>What to say / do</h4>
+        <p class="say">"I'd like to understand all my options before deciding, not just what your company offers. Can you point me to alternatives too?"</p>
+        <h4>What to expect</h4>
+        <p class="muted">A provider acting in line with the Code of Conduct should be able to answer this comfortably. If they can't or won't, that's worth noting.</p>
+      </div>
+
+      <div class="scenario">
+        <span class="num">02</span>
+        <div class="label">Asked for login details</div>
+        <h4>The issue</h4>
+        <p class="muted">A worker or provider asks for your online account passwords or wants to control your device directly.</p>
+        <h4>What to say / do</h4>
+        <p class="say">"I'm not comfortable sharing my login details. Can we find another way to do this together?"</p>
+        <h4>What to expect</h4>
+        <p class="muted">This request itself is a red flag. If it continues, contact the NDIS Commission on 1800 035 544.</p>
+      </div>
+
+      <div class="scenario">
+        <span class="num">03</span>
+        <div class="label">Price doesn't add up</div>
+        <h4>The issue</h4>
+        <p class="muted">An invoice or quote looks higher than expected, and no clear reason is given.</p>
+        <h4>What to say / do</h4>
+        <p class="say">"Can you break this down against the current NDIS Price Guide, and explain any difference?"</p>
+        <h4>What to expect</h4>
+        <p class="muted">A legitimate provider can explain their pricing. Unjustified price differences can breach the Code of Conduct.</p>
+      </div>
+
+      <div class="scenario">
+        <span class="num">04</span>
+        <div class="label">Not sure if they need to be registered</div>
+        <h4>The issue</h4>
+        <p class="muted">You're arranging Supported Independent Living and aren't sure if the provider needs to be formally registered.</p>
+        <h4>What to say / do</h4>
+        <p class="say">"Are you registered with the NDIS Commission to deliver Supported Independent Living?"</p>
+        <h4>What to expect</h4>
+        <p class="muted">From 1 July 2026, SIL providers must be registered, with a transition window to 1 October 2026 for providers who were already delivering SIL. Confirm current status directly, this is an area still settling in as the rule rolls out.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 SUMMARY -->
+  <section id="s-summary">
+    <div class="summary">
+      <div class="section-label" style="color:#F4D28A;">Section 5 · Tear-out reference</div>
+      <h2>Choosing Professionals · One-Page Summary</h2>
+      <div class="card">
+        <h3>Before you sign anything, check</h3>
+        <p>Registration status for the support type (especially SIL). Current worker screening clearance, if that matters to you. A written service agreement, including how to exit it. A clear complaints process.</p>
+      </div>
+      <div class="card">
+        <h3>Six questions worth asking</h3>
+        <p>Are you registered for this support? Does my worker hold a current clearance? How does this cost compare to the Price Guide? What alternatives exist? Can I see the service agreement first? What's your complaints process?</p>
+      </div>
+      <div class="card">
+        <h3>Five red flags</h3>
+        <p>Only their own services offered. Requests for passwords or device access. Inconsistent or unexplained pricing. Pressure to sign quickly. Can't confirm registration or screening.</p>
+      </div>
+      <div class="numbers">
+        <div class="n-card"><div class="big">1800 035 544</div><div class="lbl">NDIS Quality &amp; Safeguards Commission</div></div>
+        <div class="n-card"><div class="big">1800 800 110</div><div class="lbl">NDIS (NDIA)</div></div>
+        <div class="n-card"><div class="big">000</div><div class="lbl">Emergency</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKSHEET -->
+  <section id="s-worksheet">
+    <div class="worksheet">
+      <h2>🧩 My Provider Checklist</h2>
+      <p style="color:#5C5746; font-size:.92rem;">Type your answers, then save your work and come back any time. Keep this with your NDIS folder.</p>
+
+      <div class="field">
+        <label>1 · Provider or worker I'm considering</label>
+        <input type="text" id="ws-name" placeholder="Name of provider or worker">
+      </div>
+
+      <div class="field">
+        <label>2 · What I checked</label>
+        <div class="checklist">
+          <label><input type="checkbox" id="c1"> Confirmed registration status for this support</label>
+          <label><input type="checkbox" id="c2"> Confirmed worker screening clearance (if relevant to me)</label>
+          <label><input type="checkbox" id="c3"> Compared cost to the NDIS Price Guide</label>
+          <label><input type="checkbox" id="c4"> Asked about alternatives, not just their own services</label>
+          <label><input type="checkbox" id="c5"> Seen a written service agreement, including how to exit it</label>
+          <label><input type="checkbox" id="c6"> Asked about their complaints process</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>3 · Anything that felt off</label>
+        <textarea id="ws-flags" placeholder="Note anything that gave you pause, even small things..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>4 · How confident do I feel about this choice?</label>
+        <div class="radio-row">
+          <label><input type="radio" name="conf" value="1"> Not confident yet</label>
+          <label><input type="radio" name="conf" value="2"> A little confident</label>
+          <label><input type="radio" name="conf" value="3"> Quite confident</label>
+          <label><input type="radio" name="conf" value="4"> Very confident 🎉</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>One thing I will do this week</label>
+        <input type="text" id="ws-next" placeholder="e.g. Call and confirm registration status">
+      </div>
+
+      <div class="btnrow no-print">
+        <button class="btn" onclick="saveWorksheet()">💾 Save my progress</button>
+        <button class="btn secondary" onclick="loadWorksheet()">📂 Load saved work</button>
+      </div>
+      <div id="ws-status"></div>
+    </div>
+
+    <div class="done-banner" id="done-banner">You've completed Module 2. 🎉<br>You now know what to check before choosing a provider, and the words to use if something doesn't feel right.</div>
+  </section>
+
+  <footer class="disclaimer">
+    Plain-language NDIS participant resource · Last reviewed July 2026 · General information only, not legal, clinical or financial advice, and not a substitute for professional advice.<br>
+    Plan Decoder is an independent resource. It is not affiliated with, endorsed by, or part of the NDIA or the NDIS.
+  </footer>
+
+</div>
+
+<script>
+// ── Accessibility: font size ──
+let fontStep = 0;
+function changeSize(dir){
+  fontStep = Math.max(-2, Math.min(4, fontStep + dir));
+  document.body.style.fontSize = (1 + fontStep * 0.08) + 'rem';
+}
+function resetSize(){ fontStep = 0; document.body.style.fontSize = '1rem'; }
+
+// ── Accessibility: read aloud ──
+function readAloud(){
+  const text = document.querySelector('.wrap').innerText;
+  if ('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.92; u.lang = 'en-AU';
+    window.speechSynthesis.speak(u);
+  } else {
+    alert('Text-to-speech is not supported in this browser.');
+  }
+}
+function stopReading(){ if ('speechSynthesis' in window) window.speechSynthesis.cancel(); }
+
+// ── Worksheet save/load ──
+function collectWorksheet(){
+  return {
+    name: document.getElementById('ws-name').value,
+    c1: document.getElementById('c1').checked,
+    c2: document.getElementById('c2').checked,
+    c3: document.getElementById('c3').checked,
+    c4: document.getElementById('c4').checked,
+    c5: document.getElementById('c5').checked,
+    c6: document.getElementById('c6').checked,
+    flags: document.getElementById('ws-flags').value,
+    conf: (document.querySelector('input[name=conf]:checked') || {}).value || '',
+    next: document.getElementById('ws-next').value
+  };
+}
+function saveWorksheet(){
+  try {
+    localStorage.setItem('planDecoder_module2', JSON.stringify(collectWorksheet()));
+    document.getElementById('ws-status').textContent = 'Saved just now.';
+    const allChecked = ['c1','c2','c3','c4','c5','c6'].every(id => document.getElementById(id).checked);
+    document.getElementById('done-banner').style.display = allChecked ? 'block' : 'none';
+  } catch(e){
+    document.getElementById('ws-status').textContent = 'Could not save, your browser may be blocking local storage.';
+  }
+}
+function loadWorksheet(){
+  try {
+    const raw = localStorage.getItem('planDecoder_module2');
+    if (!raw){ document.getElementById('ws-status').textContent = 'No saved work found yet.'; return; }
+    const d = JSON.parse(raw);
+    document.getElementById('ws-name').value = d.name || '';
+    ['c1','c2','c3','c4','c5','c6'].forEach(id => document.getElementById(id).checked = !!d[id]);
+    document.getElementById('ws-flags').value = d.flags || '';
+    document.getElementById('ws-next').value = d.next || '';
+    if (d.conf) { const r = document.querySelector(`input[name=conf][value="${d.conf}"]`); if (r) r.checked = true; }
+    document.getElementById('ws-status').textContent = 'Loaded your saved work.';
+  } catch(e){
+    document.getElementById('ws-status').textContent = 'Could not load saved work.';
+  }
+}
+window.addEventListener('load', loadWorksheet);
+</script>
+</body>
+</html>
