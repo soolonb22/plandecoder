@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Decoder — Guided Journey with Ollie</title>
+<meta name="description" content="Interactive NDIS guided journey with Ollie. Early Childhood pathway, eligibility support, and preparation tools. Privacy-first.">
+<style>
+  :root {
+    --ndis-purple: #6B2976;
+    --ndis-purple-dark: #4A1C52;
+    --ndis-purple-soft: #F3EAF5;
+    --ndis-teal: #009EAD;
+    --ndis-teal-soft: #E0F5F7;
+    --ndis-green: #8AC640;
+    --bg: #FAF8FC;
+    --card: #FFFFFF;
+    --text: #2A2430;
+    --muted: #5C5668;
+    --border: #E5DFEA;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(107, 41, 118, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  :focus-visible { outline: 3px solid var(--ndis-teal); outline-offset: 2px; }
+
+  /* Header */
+  .topbar {
+    background: var(--ndis-purple-dark);
+    color: #fff;
+    padding: 0 20px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.3px;
+    text-decoration: none;
+    color: #fff;
+  }
+  .logo span { color: #7FD8DF; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }
+  .pill {
+    background: rgba(255,255,255,0.15);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  /* Layout */
+  .app-shell {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 58px);
+  }
+  @media (max-width: 860px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .avatar-panel { order: 2; border-top: 1px solid var(--border); }
+  }
+
+  /* Avatar Panel */
+  .avatar-panel {
+    background: linear-gradient(180deg, var(--ndis-purple-soft) 0%, #fff 100%);
+    border-right: 1px solid var(--border);
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .ollie-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 14px;
+  }
+  .ollie-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 16px;
+  }
+
+  /* Emotional states — mainly affect speech bubble; avatar uses idle/speaking animations */
+  .ollie-wrap.listening .ollie-img {
+    filter: brightness(1.03);
+  }
+  .ollie-wrap.calm .ollie-img {
+    filter: brightness(1.05) saturate(0.93);
+  }
+
+  .speech-bubble {
+    background: #fff;
+    border: 2px solid var(--ndis-purple);
+    border-radius: 18px;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    position: relative;
+    box-shadow: var(--shadow);
+    max-width: 100%;
+    transition: border-color 0.4s ease,
+                background 0.4s ease,
+                box-shadow 0.4s ease;
+  }
+  .speech-bubble::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--ndis-purple);
+    transition: border-bottom-color 0.4s ease;
+  }
+
+  .speech-bubble.listening {
+    border-color: var(--ndis-teal);
+    box-shadow: 0 4px 18px rgba(0, 158, 173, 0.13);
+  }
+  .speech-bubble.listening::after {
+    border-bottom-color: var(--ndis-teal);
+  }
+  .speech-bubble.encouraging {
+    border-color: var(--ndis-green);
+    background: #F7FBF0;
+    box-shadow: 0 4px 18px rgba(138, 198, 64, 0.16);
+  }
+  .speech-bubble.encouraging::after {
+    border-bottom-color: var(--ndis-green);
+  }
+  .speech-bubble.calm {
+    border-color: #7EB8C0;
+    background: #F0F9FA;
+    box-shadow: 0 4px 16px rgba(126, 184, 192, 0.13);
+  }
+  .speech-bubble.calm::after {
+    border-bottom-color: #7EB8C0;
+  }
+
+  .speech-bubble .name {
+    font-weight: 800;
+    color: var(--ndis-purple);
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Smooth text fade during mood change */
+  #speechText {
+    transition: opacity 0.22s ease;
+  }
+  .speech-bubble.fading #speechText {
+    opacity: 0.3;
+  }
+  .avatar-controls {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .calm-btn, .voice-btn {
+    width: 100%;
+    background: var(--ndis-teal-soft);
+    border: 1px solid var(--ndis-teal);
+    color: var(--ndis-teal);
+    font-weight: 700;
+    padding: 11px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .calm-btn:hover, .voice-btn:hover { background: #d0eef1; }
+  .voice-btn.muted {
+    background: #f0f0f0;
+    border-color: #ccc;
+    color: #777;
+  }
+
+  /* Lively speaking animation for the clipboard character */
+  @keyframes speakingBounce {
+    0%, 100% { transform: scale(1.02) translateY(0) rotate(0deg); }
+    20% { transform: scale(1.06) translateY(-4px) rotate(-1.5deg); }
+    40% { transform: scale(1.04) translateY(-1px) rotate(1deg); }
+    60% { transform: scale(1.07) translateY(-5px) rotate(-1deg); }
+    80% { transform: scale(1.03) translateY(-2px) rotate(0.8deg); }
+  }
+  .ollie-wrap.speaking .ollie-img {
+    animation: speakingBounce 0.85s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+
+  /* Gentle idle bob so he feels alive even when not speaking */
+  @keyframes idleBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  .ollie-wrap:not(.speaking) .ollie-img {
+    animation: idleBob 3.2s ease-in-out infinite;
+  }
+
+  /* Main content */
+  .main-panel {
+    padding: 28px 24px 60px;
+    max-width: 720px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #E8E0ED;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ndis-teal), var(--ndis-purple));
+    transition: width 0.35s ease;
+  }
+  .step-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 22px;
+    font-weight: 600;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 24px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h1 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--ndis-purple-dark);
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .card h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--ndis-purple-dark);
+    margin-bottom: 8px;
+  }
+  .card p { color: var(--muted); margin-bottom: 14px; font-size: 0.98rem; }
+
+  .privacy-note {
+    background: var(--ndis-teal-soft);
+    border: 1px solid #B8E4E9;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    color: #0B5259;
+    margin-bottom: 18px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .path-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  @media (max-width: 520px) { .path-grid { grid-template-columns: 1fr; } }
+
+  .path-card {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+    text-align: left;
+  }
+  .path-card:hover {
+    border-color: var(--ndis-teal);
+    background: var(--ndis-teal-soft);
+  }
+  .path-card.selected {
+    border-color: var(--ndis-purple);
+    background: var(--ndis-purple-soft);
+  }
+  .path-card strong {
+    display: block;
+    font-size: 1.02rem;
+    color: var(--ndis-purple-dark);
+    margin-bottom: 4px;
+  }
+  .path-card span {
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+
+  .choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .choice-btn {
+    border: 2px solid var(--border);
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .choice-btn:hover {
+    border-color: var(--ndis-teal);
+    background: var(--ndis-teal-soft);
+  }
+  .choice-btn.selected {
+    border-color: var(--ndis-purple);
+    background: var(--ndis-purple-soft);
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .btn {
+    border: none;
+    border-radius: 12px;
+    padding: 13px 22px;
+    font-weight: 700;
+    font-size: 0.97rem;
+    cursor: pointer;
+  }
+  .btn-back {
+    background: #fff;
+    border: 2px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-primary {
+    background: var(--ndis-purple);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--ndis-purple-dark); }
+  .btn-teal {
+    background: var(--ndis-teal);
+    color: #fff;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    color: var(--ndis-purple-dark);
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    background: #fff;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--ndis-teal);
+    outline: none;
+  }
+  .field textarea { min-height: 90px; resize: vertical; }
+
+  .result-box {
+    background: var(--ndis-purple-soft);
+    border-radius: 12px;
+    padding: 18px;
+    margin-top: 12px;
+  }
+  .result-box h3 {
+    font-size: 1.05rem;
+    color: var(--ndis-purple-dark);
+    margin-bottom: 8px;
+  }
+
+  .disclaimer {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+
+  /* Calm Corner */
+  .calm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 36, 48, 0.55);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .calm-overlay.open { display: flex; }
+  .calm-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 24px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+  }
+  .calm-card h2 { color: var(--ndis-purple-dark); margin-bottom: 12px; }
+  .calm-card p { color: var(--muted); margin-bottom: 18px; }
+  .breath-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: var(--ndis-teal-soft);
+    border: 4px solid var(--ndis-teal);
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--ndis-teal);
+    animation: breathe 6s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="#" class="logo" onclick="restart(); return false;">Plan<span>Decoder</span></a>
+  <div class="topbar-right">
+    <span class="pill" id="modePill">Guided Journey</span>
+  </div>
+</header>
+
+<div class="app-shell">
+  <!-- Avatar Panel -->
+  <aside class="avatar-panel">
+    <div class="ollie-wrap" id="ollieWrap">
+      <img src="ollie.png" alt="Ollie, your Plan Decoder guide" class="ollie-img" id="ollieImg">
+    </div>
+    <div class="speech-bubble" id="speechBubble">
+      <div class="name">OLLIE</div>
+      <div id="speechText">G'day. I'm Ollie. I'll walk with you step by step. No rush, no pressure.</div>
+    </div>
+    <div class="avatar-controls">
+      <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🔊 Voice On</button>
+      <button class="calm-btn" onclick="openCalm()">Calm Corner</button>
+    </div>
+  </aside>
+
+  <!-- Main Panel -->
+  <main class="main-panel">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 4%"></div></div>
+    <div class="step-label" id="stepLabel">Getting started</div>
+
+    <div id="app"></div>
+  </main>
+</div>
+
+<!-- Calm Corner Overlay -->
+<div class="calm-overlay" id="calmOverlay">
+  <div class="calm-card">
+    <h2>Calm Corner</h2>
+    <p>Take a short pause. Breathe with the circle.</p>
+    <div class="breath-circle">Breathe</div>
+    <p style="font-size:0.9rem;">In for 4… hold… out for 6. You can stay as long as you need.</p>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="closeCalm()">I'm ready to continue</button>
+  </div>
+</div>
+
+<script>
+/* ========== STATE ========== */
+const LS_KEY = 'pd_journey_v1';
+let state = {
+  step: 'start',
+  path: null,
+  ageGroup: null,
+  earlyEnough: null,
+  likelihood: null,
+  childName: '',
+  goalsText: '',
+  consent: false
+};
+
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) state = Object.assign(state, JSON.parse(raw));
+  } catch(e) {}
+}
+
+/* ========== OLLIE SPEECH ========== */
+const messages = {
+  start: {
+    text: "G'day. I'm Ollie. I'll walk beside you through the NDIS pathways, one calm step at a time. No rush, no pressure. You can pause whenever you need.",
+    mood: "talking"
+  },
+  consent: {
+    text: "Before we begin, I want to be clear about privacy and what this tool can (and cannot) do. Please read carefully. There is no time limit.",
+    mood: "listening"
+  },
+  path: {
+    text: "Which path feels closest to your situation right now? Choose the one that fits best. We can always change direction later — nothing is locked in.",
+    mood: "listening"
+  },
+  ec_intro: {
+    text: "You're on the Early Childhood pathway. This works differently from the standard adult path. I'll explain everything in plain language so you know exactly what to expect.",
+    mood: "talking"
+  },
+  ec_age: {
+    text: "First, tell me about the child's age and situation. This helps me guide you down the right stream under the Early Childhood Approach.",
+    mood: "listening"
+  },
+  ec_early: {
+    text: "Many families find that early intervention and mainstream supports are enough for now. Some children never need to become NDIS participants. What feels true for you right now?",
+    mood: "listening"
+  },
+  ec_elig: {
+    text: "Understood. We'll move into the child eligibility questions next. Important difference: for children under 6 with developmental delay, permanence is not required.",
+    mood: "talking"
+  },
+  ec_report: {
+    text: "I can prepare a simple child-focused report for $4.99. It helps organise what you've shared so it's ready for the Early Childhood partner conversation.",
+    mood: "talking"
+  },
+  ec_goals: {
+    text: "In your own words, what are the main goals for this child? Speak naturally. Later I'll help turn your words into clear NDIS functional language.",
+    mood: "listening"
+  },
+  ec_done: {
+    text: "You've built a solid starting point. You can take this to the Early Childhood partner, or come back to the Lounge any time. Well done for getting this far.",
+    mood: "encouraging"
+  },
+  ec_mainstream: {
+    text: "That sounds like a good plan for now. Early Connections can still help with information and community links. I'll keep a gentle reminder ready if things change.",
+    mood: "encouraging"
+  },
+  lounge: {
+    text: "Welcome to the Membership Lounge preview. This will become your ongoing home for tools, templates and support. More is coming soon.",
+    mood: "talking"
+  },
+  redirect: {
+    text: "The Early Childhood Approach is for children younger than 9. From age 9 the standard pathway is used. I'll take you back so you can choose the right route.",
+    mood: "talking"
+  },
+  placeholder: {
+    text: "This part of the journey is still being built. The Early Childhood path is ready for you to explore. Thank you for testing with me.",
+    mood: "calm"
+  },
+  calm: {
+    text: "I'm right here with you. Take all the time you need. When you're ready, we can continue together.",
+    mood: "calm"
+  }
+};
+
+/* ========== VOICE SYSTEM ========== */
+let voiceEnabled = true;
+let currentUtterance = null;
+let preferredVoice = null;
+
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  preferredVoice = voices.find(v => v.lang === 'en-AU') ||
+                   voices.find(v => v.lang.startsWith('en-AU')) ||
+                   voices.find(v => v.name.toLowerCase().includes('australian')) ||
+                   voices.find(v => v.lang === 'en-GB') ||
+                   voices.find(v => v.lang.startsWith('en')) ||
+                   voices[0];
+}
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+loadVoices();
+
+function stopSpeaking() {
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  currentUtterance = null;
+  const wrap = document.getElementById('ollieWrap');
+  if (wrap) wrap.classList.remove('speaking');
+}
+
+function toggleVoice() {
+  voiceEnabled = !voiceEnabled;
+  const btn = document.getElementById('voiceBtn');
+  if (voiceEnabled) {
+    btn.textContent = '🔊 Voice On';
+    btn.classList.remove('muted');
+  } else {
+    btn.textContent = '🔇 Voice Off';
+    btn.classList.add('muted');
+    stopSpeaking();
+  }
+  try { localStorage.setItem('pd_voice', voiceEnabled ? '1' : '0'); } catch(e) {}
+}
+
+try {
+  if (localStorage.getItem('pd_voice') === '0') {
+    voiceEnabled = false;
+    setTimeout(() => {
+      const btn = document.getElementById('voiceBtn');
+      if (btn) {
+        btn.textContent = '🔇 Voice Off';
+        btn.classList.add('muted');
+      }
+    }, 50);
+  }
+} catch(e) {}
+
+function speak(key) {
+  const entry = messages[key] || messages.placeholder;
+  const text = typeof entry === 'string' ? entry : entry.text;
+  const mood = typeof entry === 'string' ? 'talking' : (entry.mood || 'talking');
+
+  const bubble = document.getElementById('speechBubble');
+  const wrap = document.getElementById('ollieWrap');
+  const textEl = document.getElementById('speechText');
+
+  stopSpeaking();
+
+  bubble.classList.add('fading');
+
+  setTimeout(() => {
+    textEl.textContent = text;
+
+    wrap.classList.remove('talking', 'talking-enter', 'listening', 'encouraging', 'calm', 'speaking');
+    bubble.classList.remove('listening', 'encouraging', 'calm', 'fading');
+
+    wrap.classList.add(mood);
+    if (mood !== 'talking') {
+      bubble.classList.add(mood);
+    }
+
+    if (voiceEnabled && 'speechSynthesis' in window) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 0.92;
+      utter.pitch = 1.05;
+      utter.volume = 1;
+
+      if (preferredVoice) {
+        utter.voice = preferredVoice;
+      }
+
+      utter.onstart = () => {
+        wrap.classList.add('speaking');
+      };
+      utter.onend = () => {
+        wrap.classList.remove('speaking');
+        currentUtterance = null;
+      };
+      utter.onerror = () => {
+        wrap.classList.remove('speaking');
+        currentUtterance = null;
+      };
+
+      currentUtterance = utter;
+      speechSynthesis.speak(utter);
+    }
+  }, 180);
+}
+
+/* ========== RENDER ========== */
+function setProgress(pct, label) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('stepLabel').textContent = label;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const s = state.step;
+
+  if (s === 'start') {
+    setProgress(5, 'Welcome');
+    speak('start');
+    app.innerHTML = `
+      <div class="card">
+        <h1>Welcome to Plan Decoder</h1>
+        <p>I am Ollie. I will guide you through the NDIS pathways in plain language. This is a preparation and information tool — it does not make official decisions.</p>
+        <div class="privacy-note">
+          <span>🔒</span>
+          <div><strong>Privacy first.</strong> For this early version, answers stay in your browser. Nothing is sent to a server yet.</div>
+        </div>
+        <p>You can take breaks, go back, or use the Calm Corner whenever you need.</p>
+        <div class="nav-row">
+          <span></span>
+          <button class="btn btn-primary" onclick="go('consent')">Continue with Ollie</button>
+        </div>
+      </div>
+      <p class="disclaimer">Plan Decoder is independent and not affiliated with the NDIA or the Australian Government. All official NDIS decisions are made by the NDIA.</p>
+    `;
+  }
+
+  else if (s === 'consent') {
+    setProgress(12, 'Privacy & consent');
+    speak('consent');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Before we begin</h2>
+        <p>This tool helps you understand pathways and prepare information. It is general guidance only.</p>
+        <ul style="margin: 12px 0 18px 20px; color: var(--muted); font-size: 0.95rem;">
+          <li>It does not assess eligibility or guarantee funding.</li>
+          <li>It is not legal, medical or registered advocacy advice.</li>
+          <li>You remain in control of what you share and what you do next.</li>
+          <li>You can stop or go back at any time.</li>
+        </ul>
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer; margin-bottom:18px;">
+          <input type="checkbox" id="consentCheck" style="margin-top:4px; width:18px; height:18px;" ${state.consent ? 'checked' : ''}>
+          <span>I understand this is a preparation tool and I am ready to continue.</span>
+        </label>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('start')">Back</button>
+          <button class="btn btn-primary" onclick="acceptConsent()">I understand — continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'path') {
+    setProgress(22, 'Choose a path');
+    speak('path');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Which path fits best right now?</h2>
+        <p>Select the option that most closely matches your situation. We can adjust later if needed.</p>
+        <div class="path-grid">
+          <div class="path-card ${state.path==='participant'?'selected':''}" onclick="selectPath('participant')">
+            <strong>Participant</strong>
+            <span>I am (or want to become) an NDIS participant</span>
+          </div>
+          <div class="path-card ${state.path==='carer'?'selected':''}" onclick="selectPath('carer')">
+            <strong>Carer / Nominee</strong>
+            <span>I am supporting someone else</span>
+          </div>
+          <div class="path-card ${state.path==='ec'?'selected':''}" onclick="selectPath('ec')">
+            <strong>Early Childhood</strong>
+            <span>Child under 9 — developmental delay or disability</span>
+          </div>
+          <div class="path-card ${state.path==='review'?'selected':''}" onclick="selectPath('review')">
+            <strong>Review</strong>
+            <span>Internal or external review of a decision</span>
+          </div>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('consent')">Back</button>
+          <button class="btn btn-primary" id="pathNext" ${state.path ? '' : 'disabled'} onclick="startPath()">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ========== EARLY CHILDHOOD BRANCH ========== */
+  else if (s === 'ec_intro') {
+    setProgress(30, 'Early Childhood Approach');
+    speak('ec_intro');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Early Childhood Approach</h2>
+        <p>This pathway is deliberately different from standard access.</p>
+        <ul style="margin: 10px 0 16px 20px; color: var(--muted);">
+          <li>Children younger than 6 with developmental delay</li>
+          <li>Children younger than 9 with disability</li>
+          <li>You connect with an Early Childhood partner (not an LAC)</li>
+          <li>Many children receive early or mainstream supports without becoming a participant</li>
+          <li>At age 9 the child transitions to the standard pathway</li>
+        </ul>
+        <div class="privacy-note">
+          <span>ℹ️</span>
+          <div>For under-6 developmental delay, <strong>permanence is not required</strong>. That is a key difference from adult eligibility questions.</div>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('path')">Back</button>
+          <button class="btn btn-primary" onclick="go('ec_age')">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_age') {
+    setProgress(40, 'Child’s age & situation');
+    speak('ec_age');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Child’s age and situation</h2>
+        <p>This determines which stream applies under the Early Childhood Approach.</p>
+        <div class="choice-list">
+          <button class="choice-btn ${state.ageGroup==='dd'?'selected':''}" onclick="setAge('dd')">
+            Under 6 · developmental delay or concerns
+          </button>
+          <button class="choice-btn ${state.ageGroup==='dis'?'selected':''}" onclick="setAge('dis')">
+            Under 9 · with disability
+          </button>
+          <button class="choice-btn ${state.ageGroup==='redirect'?'selected':''}" onclick="setAge('redirect')">
+            Aged 9 or older
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_intro')">Back</button>
+          <button class="btn btn-primary" ${state.ageGroup ? '' : 'disabled'} onclick="afterAge()">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_early') {
+    setProgress(52, 'Early & mainstream supports');
+    speak('ec_early');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Are early or mainstream supports enough for now?</h2>
+        <p>Not every child needs to become an NDIS participant. Early Connections can help with information, peer support, and community referrals.</p>
+        <div class="choice-list">
+          <button class="choice-btn ${state.earlyEnough==='yes'?'selected':''}" onclick="setEarly('yes')">
+            Yes — early / mainstream supports look enough for now
+          </button>
+          <button class="choice-btn ${state.earlyEnough==='no'?'selected':''}" onclick="setEarly('no')">
+            No — we need more support than that
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_age')">Back</button>
+          <button class="btn btn-primary" ${state.earlyEnough ? '' : 'disabled'} onclick="afterEarly()">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_mainstream') {
+    setProgress(70, 'Mainstream supports');
+    speak('ec_mainstream');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Mainstream & community supports</h2>
+        <p>Great. You can explore local early intervention, community services, and peer supports first. I can help you build a simple list later when the Supports Finder is fully connected.</p>
+        <div class="result-box">
+          <h3>Next steps</h3>
+          <p style="margin:0; color:var(--text);">Ollie will set a gentle re-check reminder. You can return any time if things change.</p>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_early')">Back</button>
+          <button class="btn btn-teal" onclick="go('lounge')">Go to Membership Lounge (preview)</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_elig') {
+    setProgress(62, 'Child eligibility');
+    speak('ec_elig');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Child eligibility questions</h2>
+        <p>Under 6: we use the NDIS Act developmental-delay definition.<br>
+        Under 9: disability plus functional impact.</p>
+        <p style="margin-top:12px;">For this MVP we will move forward to a simple goals capture and report step. Full ICANN child-tuned questions will be added next.</p>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_early')">Back</button>
+          <button class="btn btn-primary" onclick="go('ec_goals')">Continue to goals</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_goals') {
+    setProgress(78, 'Child’s goals');
+    speak('ec_goals');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Describe the child’s goals in your own words</h2>
+        <p>Speak naturally. Later I will help translate this into clear NDIS functional language for the planning meeting.</p>
+        <div class="field">
+          <label for="goalsText">What do you most want support to help with?</label>
+          <textarea id="goalsText" placeholder="e.g. We want help with communication, getting ready for kindy, and managing big feelings at home...">${state.goalsText || ''}</textarea>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_elig')">Back</button>
+          <button class="btn btn-primary" onclick="saveGoals()">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_report') {
+    setProgress(88, 'Child report');
+    speak('ec_report');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Child preparation report</h2>
+        <p>I can generate a simple child-focused preparation summary based on what you have shared. Price for the full report is $4.99 (consistent with the standard report).</p>
+        <div class="result-box">
+          <h3>What is included (MVP)</h3>
+          <ul style="margin:8px 0 0 18px; color:var(--text);">
+            <li>Summary of age stream and early supports decision</li>
+            <li>Your goals in plain language</li>
+            <li>Suggested next steps for the Early Childhood partner meeting</li>
+          </ul>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_goals')">Back</button>
+          <button class="btn btn-teal" onclick="go('ec_done')">Continue (report generation coming next)</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'ec_done') {
+    setProgress(96, 'Preparation complete');
+    speak('ec_done');
+    app.innerHTML = `
+      <div class="card">
+        <h2>You have a solid starting point</h2>
+        <p>You can take what you have prepared to a conversation with an Early Childhood partner. At age 9 the child will transition to the standard LAC pathway — I will flag that when the time comes.</p>
+        <div class="result-box">
+          <h3>Goals you shared</h3>
+          <p style="margin:0; color:var(--text); white-space:pre-wrap;">${state.goalsText ? escapeHtml(state.goalsText) : 'No goals entered yet.'}</p>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('ec_report')">Back</button>
+          <button class="btn btn-primary" onclick="go('lounge')">Enter Membership Lounge (preview)</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'lounge') {
+    setProgress(100, 'Membership Lounge');
+    speak('lounge');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Membership Lounge — $29/mo (preview)</h2>
+        <p>This is the ongoing home for tools, templates, milestone tracking, therapy logs, and the community space. Full tools will be added in the next build phase.</p>
+        <p>For Early Childhood users, the lounge will also include age-9 transition reminders and EC-specific resources.</p>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('path')">Back to path choice</button>
+          <button class="btn btn-primary" onclick="restart()">Start over</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else if (s === 'redirect') {
+    setProgress(35, 'Redirect');
+    speak('redirect');
+    app.innerHTML = `
+      <div class="card">
+        <h2>Age 9 or older</h2>
+        <p>The Early Childhood Approach applies to children younger than 9. From age 9 the standard pathway with an LAC is used.</p>
+        <p>I will take you back to the main path selector so you can choose the appropriate route.</p>
+        <div class="nav-row">
+          <button class="btn btn-primary" onclick="go('path')">Return to path choice</button>
+        </div>
+      </div>
+    `;
+  }
+
+  else {
+    setProgress(40, 'Coming next');
+    speak('placeholder');
+    app.innerHTML = `
+      <div class="card">
+        <h2>This path is next</h2>
+        <p>The full Participant, Carer and Review pathways will be built in the following phases. The Early Childhood branch is complete and ready to use.</p>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="go('path')">Back to path choice</button>
+          <button class="btn btn-primary" onclick="selectPath('ec'); go('ec_intro')">Try Early Childhood path</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+/* ========== ACTIONS ========== */
+function go(step) {
+  stopSpeaking();
+  state.step = step;
+  save();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function acceptConsent() {
+  const checked = document.getElementById('consentCheck')?.checked;
+  if (!checked) {
+    alert('Please confirm you understand before continuing.');
+    return;
+  }
+  state.consent = true;
+  go('path');
+}
+
+function selectPath(p) {
+  state.path = p;
+  save();
+  render();
+}
+
+function startPath() {
+  if (!state.path) return;
+  if (state.path === 'ec') go('ec_intro');
+  else go('other');
+}
+
+function setAge(g) {
+  state.ageGroup = g;
+  save();
+  render();
+}
+
+function afterAge() {
+  if (state.ageGroup === 'redirect') go('redirect');
+  else go('ec_early');
+}
+
+function setEarly(v) {
+  state.earlyEnough = v;
+  save();
+  render();
+}
+
+function afterEarly() {
+  if (state.earlyEnough === 'yes') go('ec_mainstream');
+  else go('ec_elig');
+}
+
+function saveGoals() {
+  state.goalsText = document.getElementById('goalsText')?.value || '';
+  save();
+  go('ec_report');
+}
+
+function restart() {
+  if (confirm('Start over? Current progress will be cleared.')) {
+    state = { step: 'start', path: null, ageGroup: null, earlyEnough: null, likelihood: null, childName: '', goalsText: '', consent: false };
+    save();
+    render();
+  }
+}
+
+function openCalm() {
+  stopSpeaking();
+  speak('calm');
+  document.getElementById('calmOverlay').classList.add('open');
+}
+function closeCalm() {
+  stopSpeaking();
+  document.getElementById('calmOverlay').classList.remove('open');
+  render();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
+}
+
+/* ========== INIT ========== */
+load();
+render();
+</script>
+</body>
+</html>
