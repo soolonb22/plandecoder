@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decode My Plan · Plan Decoder</title>
+<meta name="description" content="Upload your NDIS plan and get a plain-language breakdown: your budgets, what each line means, dates to watch and questions to ask.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#6B2976">
+<style>
+:root{--brand:#6B2976;--brand-soft:#f4ecf6;--ink:#1d1b20;--muted:#5b5661;--line:#e3dde6;--bg:#fbf9fc;--card:#fff;
+  --high:#b42318;--high-bg:#fef3f2;--med:#b54708;--med-bg:#fffaeb;--low:#175cd3;--low-bg:#eff8ff;--ok:#067647}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+a{color:var(--brand)}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 64px}
+header .brand{font-weight:700;color:var(--brand);text-decoration:none}
+h1{font-size:1.9rem;line-height:1.2;margin:.6em 0 .3em}
+h2{font-size:1.3rem;margin:1.6em 0 .5em;color:var(--brand)}
+h3{font-size:1.05rem;margin:0 0 .3em}
+p.lead{font-size:1.1rem;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:12px 0}
+.drop{border:2px dashed var(--brand);border-radius:16px;background:var(--brand-soft);padding:32px 16px;text-align:center;cursor:pointer}
+.drop:focus-within,.drop.over{outline:3px solid var(--brand);outline-offset:3px}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.btn{display:inline-block;background:var(--brand);color:#fff;border:0;border-radius:999px;padding:12px 22px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+.btn.secondary{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+.btn:focus-visible{outline:3px solid #000;outline-offset:2px}
+.small{font-size:.9rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:1.3rem}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:600;background:var(--brand-soft);color:var(--brand);margin-right:4px}
+.pill.stated{background:#fff1e6;color:#9a3412}
+details{border:1px solid var(--line);border-radius:12px;background:#fff;margin:8px 0;padding:0 14px}
+summary{cursor:pointer;padding:12px 0;font-weight:600;display:flex;justify-content:space-between;gap:12px}
+summary span.amt{white-space:nowrap}
+.flag{border-left:6px solid;border-radius:10px;padding:12px 14px;margin:10px 0}
+.flag.high{border-color:var(--high);background:var(--high-bg)}
+.flag.medium{border-color:var(--med);background:var(--med-bg)}
+.flag.low{border-color:var(--low);background:var(--low-bg)}
+.locked{position:relative;background:linear-gradient(#fff,var(--brand-soft));border:2px solid var(--brand)}
+.status{padding:14px;border-radius:12px;background:var(--brand-soft);margin:12px 0}
+.error{background:var(--high-bg);color:var(--high)}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand)}
+ul.clean{padding-left:1.1em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=text]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;min-width:0;flex:1}
+.disclaimer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);margin-top:32px;padding-top:12px}
+[hidden]{display:none!important}
+@media print{.noprint{display:none!important}body{background:#fff}details{break-inside:avoid}details>*{display:block}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="noprint"><a class="brand" href="/">Plan Decoder</a></header>
+
+  <section id="intro">
+    <h1>Decode my NDIS plan</h1>
+    <p class="lead">Upload your plan. We explain it in plain words: your budgets, what each line means, dates to watch, and questions to ask.</p>
+
+    <label class="drop noprint" id="drop">
+      <input type="file" id="file" accept="application/pdf">
+      <strong>Choose your plan PDF</strong><br>
+      <span class="small">or drag it here · PDF from the my NDIS app or portal</span>
+    </label>
+
+    <div class="card small">
+      <strong>Your privacy</strong>
+      <ul class="clean">
+        <li>Your PDF is opened on <b>your device</b>. The file is not uploaded.</li>
+        <li>Only the plan's words are sent to our AI to explain them. We do <b>not</b> save them.</li>
+        <li>Your breakdown is kept on this device only. You can delete it any time.</li>
+        <li>Tip: you can cover your NDIS number before uploading. We don't need it.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+  <section id="result" aria-live="polite"></section>
+
+  <section id="actions" class="noprint" hidden>
+    <div class="row" style="margin-top:16px">
+      <button class="btn secondary" onclick="window.print()">Print or save as PDF</button>
+      <button class="btn secondary" id="forget">Delete from this device</button>
+      <button class="btn secondary" id="again">Decode another plan</button>
+    </div>
+  </section>
+
+  <p class="disclaimer">Plan Decoder is not affiliated with the NDIA. This is a plain-language guide, not legal or financial advice. Always check your plan, the my NDIS app and ndis.gov.au before you spend. If something looks wrong, talk to your support coordinator, plan manager or the NDIA (1800 800 110).</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = (n) => typeof n === "number" ? n.toLocaleString("en-AU", { style: "currency", currency: "AUD" }) : "—";
+const store = {
+  get(k, s = localStorage) { try { return JSON.parse(s.getItem(k)); } catch { return null; } },
+  set(k, v, s = localStorage) { try { s.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k, s = localStorage) { try { s.removeItem(k); } catch {} },
+};
+let paymentLink = null;
+
+function status(msg, isError) {
+  const el = $("#status");
+  el.hidden = !msg; el.textContent = msg || ""; el.classList.toggle("error", !!isError);
+}
+
+/* ---------- 1. Read the PDF on this device ---------- */
+async function readPdf(file) {
+  if (file.type !== "application/pdf") throw new Error("Please choose a PDF file.");
+  if (file.size > 25 * 1024 * 1024) throw new Error("That file is very large. Please use the plan PDF only.");
+  const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+  let text = "";
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const tc = await (await pdf.getPage(p)).getTextContent();
+    let lastY = null;
+    for (const it of tc.items) {
+      const y = it.transform[5];
+      text += (lastY !== null && Math.abs(y - lastY) > 2 ? "\n" : " ") + it.str;
+      lastY = y;
+    }
+    text += `\n\n--- page ${p} ---\n\n`;
+  }
+  if (text.replace(/[\s\-page0-9]/g, "").length > 300) return { text };
+
+  // Scanned plan (no text layer): send page images instead (max 12 pages).
+  const images = [];
+  for (let p = 1; p <= Math.min(pdf.numPages, 12); p++) {
+    const page = await pdf.getPage(p);
+    const vp = page.getViewport({ scale: 1.6 });
+    const c = document.createElement("canvas");
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+    images.push(c.toDataURL("image/jpeg", 0.7));
+  }
+  return { images };
+}
+
+/* ---------- 2. Ask the decoder ---------- */
+async function runDecode(input) {
+  status("Reading your plan… this can take up to a minute.");
+  const token = store.get("pd_token");
+  const r = await fetch("/api/decode", {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ ...input, token }),
+  });
+  const data = await r.json().catch(() => ({ error: "Something went wrong." }));
+  if (!r.ok) throw new Error(data.error || "Something went wrong.");
+  status("");
+  if (data.tier === "full") {
+    store.set("pd_breakdown", data.breakdown);
+    store.del("pd_pending", sessionStorage);
+    renderFull(data.breakdown);
+  } else {
+    // Keep the plan words in this tab only, so we can finish after payment.
+    store.set("pd_pending", input, sessionStorage);
+    renderPreview(data.breakdown);
+  }
+}
+
+/* ---------- 3. Show the results ---------- */
+function potBars(pots, total) {
+  return (pots || []).map((p) => `
+    <div class="stat"><span>${esc(p.name)}</span><b>${money(p.total)}</b>
+      <div class="bar" aria-hidden="true"><i style="width:${total ? Math.max(2, (p.total / total) * 100) : 0}%"></i></div>
+      ${p.plain_explanation ? `<p class="small">${esc(p.plain_explanation)}</p>` : ""}
+    </div>`).join("");
+}
+function header(b) {
+  return `
+    <h2>Your plan at a glance</h2>
+    <div class="grid">
+      <div class="stat"><span>Total budget</span><b>${money(b.total_budget)}</b></div>
+      <div class="stat"><span>Plan starts</span><b>${esc(b.plan_start || "Not shown")}</b></div>
+      <div class="stat"><span>Plan ends / reassessment</span><b>${esc(b.reassessment_date || b.plan_end || "Not shown")}</b></div>
+    </div>
+    <div class="card"><p>${esc(b.summary_plain)}</p></div>
+    <h2>Your budgets (pots)</h2>
+    <p class="small">Money cannot move between these pots.</p>
+    <div class="grid">${potBars(b.pots, b.total_budget)}</div>
+    ${(b.management_summary || []).length ? `<h2>Who pays your providers</h2><div class="grid">${b.management_summary.map((m) => `
+      <div class="stat"><span>${esc(m.type)}</span><b>${money(m.amount)}</b>${m.what_it_means ? `<p class="small">${esc(m.what_it_means)}</p>` : ""}</div>`).join("")}</div>` : ""}`;
+}
+
+function renderPreview(b) {
+  const L = b.locked || {};
+  $("#intro").hidden = true;
+  $("#result").innerHTML = header(b) + `
+    <div class="card locked noprint">
+      <h2 style="margin-top:0">Unlock your full breakdown</h2>
+      <ul class="clean">
+        <li><b>${L.line_items || 0}</b> support lines explained in plain words, with the rules for each</li>
+        <li><b>${L.red_flags || 0}</b> things to check${L.high_flags ? ` — <b>${L.high_flags} marked important</b>` : ""}</li>
+        <li><b>${L.key_dates || 0}</b> dates to watch</li>
+        <li><b>${L.questions || 0}</b> questions to ask your coordinator, plan manager or planner</li>
+        <li>A printable summary for meetings</li>
+      </ul>
+      <div class="row">
+        ${paymentLink ? `<a class="btn" href="${esc(paymentLink)}">Unlock for 1 credit ($5)</a>` : ""}
+      </div>
+      <p class="small">Core or Professional member? Enter your member code:</p>
+      <form class="row" id="codeForm"><label class="small" for="code" hidden>Member code</label>
+        <input type="text" id="code" autocomplete="off" placeholder="Member code"><button class="btn secondary">Unlock</button></form>
+    </div>`;
+  $("#actions").hidden = false;
+  $("#codeForm").onsubmit = async (e) => {
+    e.preventDefault();
+    await unlockWith({ code: $("#code").value });
+  };
+}
+
+function renderFull(b) {
+  $("#intro").hidden = true;
+  const byPot = {};
+  (b.line_items || []).forEach((li) => (byPot[li.pot] = byPot[li.pot] || []).push(li));
+  const order = { high: 0, medium: 1, low: 2 };
+  const flags = [...(b.red_flags || [])].sort((a, z) => order[a.severity] - order[z.severity]);
+  const byWho = {};
+  (b.questions_to_ask || []).forEach((q) => (byWho[q.who] = byWho[q.who] || []).push(q.question));
+
+  $("#result").innerHTML = header(b) +
+    (flags.length ? `<h2>Things to check first</h2>${flags.map((f) => `
+      <div class="flag ${esc(f.severity)}"><h3>${f.severity === "high" ? "Important: " : ""}${esc(f.title)}</h3>
+        <p>${esc(f.explanation)}</p><p><b>What to do:</b> ${esc(f.what_to_do)}</p></div>`).join("")}` : "") +
+    ((b.key_dates || []).length ? `<h2>Dates to watch</h2><div class="card"><ul class="clean">${b.key_dates.map((d) =>
+      `<li><b>${esc(d.date)}</b> — ${esc(d.what)}${d.why_it_matters ? `<br><span class="small">${esc(d.why_it_matters)}</span>` : ""}</li>`).join("")}</ul></div>` : "") +
+    `<h2>Every support, explained</h2>
+     <p class="small"><span class="pill stated">Stated</span> = only for exactly what is written. <span class="pill">Flexible</span> = you have choice inside that pot.</p>` +
+    Object.entries(byPot).map(([pot, items]) => `<h3 style="margin-top:18px">${esc(pot)}</h3>` + items.map((li) => `
+      <details><summary><span>${esc(li.name)}</span><span class="amt">${money(li.amount)}</span></summary>
+        <p><span class="pill ${li.stated ? "stated" : ""}">${li.stated ? "Stated" : "Flexible"}</span>${li.management ? `<span class="pill">${esc(li.management)}</span>` : ""}</p>
+        <p>${esc(li.plain_explanation)}</p>${li.rules ? `<p class="small"><b>Rules:</b> ${esc(li.rules)}</p>` : ""}
+      </details>`).join("")).join("") +
+    ((b.funding_periods || []).length ? `<h2>When your money is released</h2>
+      ${b.funding_periods_explainer ? `<p>${esc(b.funding_periods_explainer)}</p>` : ""}
+      <div class="grid">${b.funding_periods.map((f) => `<div class="stat"><span>${esc(f.label)} · ${esc(f.dates)}</span><b>${money(f.amount)}</b></div>`).join("")}</div>` : "") +
+    ((b.goals || []).length ? `<h2>Your goals</h2><div class="card"><ul class="clean">${b.goals.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></div>` : "") +
+    (Object.keys(byWho).length ? `<h2>Questions to ask</h2>${Object.entries(byWho).map(([who, qs]) =>
+      `<div class="card"><h3>${esc(who)}</h3><ul class="clean">${qs.map((q) => `<li>${esc(q)}</li>`).join("")}</ul></div>`).join("")}` : "") +
+    ((b.not_found || []).length ? `<h2>Not in your plan</h2><div class="card small"><p>Your plan didn't say:</p><ul class="clean">${b.not_found.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></div>` : "");
+  $("#actions").hidden = false;
+}
+
+/* ---------- 4. Unlock (Stripe return or member code) ---------- */
+async function unlockWith(payload) {
+  status("Checking…");
+  const r = await fetch("/api/unlock", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.token) return status(d.error || "We couldn't unlock that.", true);
+  store.set("pd_token", d.token);
+  const pending = store.get("pd_pending", sessionStorage);
+  if (pending) await runDecode(pending).catch((e) => status(e.message, true));
+  else status("Unlocked. Upload your plan to see the full breakdown.");
+}
+
+/* ---------- wiring ---------- */
+async function handleFile(file) {
+  if (!file) return;
+  try { await runDecode(await readPdf(file)); }
+  catch (e) { status(e.message || "We couldn't read that file.", true); }
+}
+$("#file").addEventListener("change", (e) => handleFile(e.target.files[0]));
+const drop = $("#drop");
+["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (e) => handleFile(e.dataTransfer.files[0]));
+$("#forget").onclick = () => { ["pd_breakdown"].forEach((k) => store.del(k)); store.del("pd_pending", sessionStorage); location.href = location.pathname; };
+$("#again").onclick = () => { store.del("pd_pending", sessionStorage); location.href = location.pathname; };
+
+(async function init() {
+  fetch("/api/config").then((r) => r.json()).then((c) => (paymentLink = c.paymentLink)).catch(() => {});
+  const sid = new URLSearchParams(location.search).get("session_id");
+  if (sid) { history.replaceState(null, "", location.pathname); return unlockWith({ session_id: sid }); }
+  const saved = store.get("pd_breakdown");
+  if (saved) renderFull(saved);
+})();
+</script>
+</body>
+</html>

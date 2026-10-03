@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "plandecoder",
+  "main": "worker.js",
+  "compatibility_date": "2026-07-03",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "CLAUDE_MODEL": "claude-sonnet-4-5",
+    "PAYMENT_LINK_URL": ""
+  }
+  // Secrets (set with `npx wrangler secret put NAME`, never commit):
+  //   ANTHROPIC_API_KEY, UNLOCK_SECRET, STRIPE_SECRET_KEY, UNLOCK_CODES
+}
